@@ -13,6 +13,18 @@ impl Workspace {
                 Some(true)
             }
 
+            Command::GoToTable => {
+                let items = self
+                    .build_palette_items(cx)
+                    .into_iter()
+                    .filter(PaletteItem::is_table)
+                    .collect();
+                self.command_palette.update(cx, |palette, cx| {
+                    palette.open_with_items(items, window, cx);
+                });
+                Some(true)
+            }
+
             Command::ToggleTasks => {
                 self.toggle_tasks_panel(cx);
                 Some(true)
@@ -43,6 +55,13 @@ impl Workspace {
                 Some(true)
             }
             Command::FocusSidebar => {
+                #[cfg(not(target_os = "macos"))]
+                {
+                    self.sidebar.update(cx, |sidebar, cx| {
+                        sidebar.set_active_tab(SidebarTab::Connections, cx);
+                    });
+                    self.sidebar_dock.update(cx, |dock, cx| dock.expand(cx));
+                }
                 self.set_focus(FocusTarget::Sidebar, window, cx);
                 Some(true)
             }

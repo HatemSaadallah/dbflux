@@ -650,3 +650,26 @@ fn the_keyboard_reaches_a_schema_diff_and_m_lists_its_actions(cx: &mut TestAppCo
         "{entries:?}"
     );
 }
+
+#[cfg(not(target_os = "macos"))]
+#[test]
+fn datagrip_tab_shortcuts_preserve_shell_keyboard_coverage() {
+    use dbflux_app::keymap::KeyChord;
+    use dbflux_ui_base::keymap::default_keymap;
+
+    for (element_id, keys, command) in [
+        ("new-tab-btn", "ctrl-shift-q", Command::NewQueryTab),
+        ("tab-close-*", "ctrl-f4", Command::CloseCurrentTab),
+        ("tab-*", "alt-right", Command::NextTab),
+    ] {
+        assert!(SHELL.entries.iter().any(|(identifier, path)| {
+            *identifier == element_id
+                && matches!(path, KeyboardPath::Command(registered) if *registered == command)
+        }));
+        let chord = KeyChord::parse(keys).expect("valid shortcut");
+        assert_eq!(
+            default_keymap().resolve(ContextId::Global, &chord),
+            Some(command)
+        );
+    }
+}

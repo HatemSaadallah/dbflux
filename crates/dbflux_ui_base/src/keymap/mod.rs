@@ -598,6 +598,20 @@ fn us_shifted_digit_symbol(key: &str) -> Option<&'static str> {
     })
 }
 
+// These DataGrip navigation chords must also work from a query context field.
+// Keep Option shortcuts on macOS with text entry, where they type characters.
+fn is_datagrip_navigation_chord(binding: &EffectiveBinding) -> bool {
+    if cfg!(target_os = "macos") || binding.keys.chords().len() != 1 {
+        return false;
+    }
+    let chord = binding.keys.first();
+    chord.modifiers == Modifiers::alt()
+        && matches!(
+            (chord.key.as_str(), binding.slot.command),
+            ("1", Command::FocusSidebar) | ("right", Command::NextTab) | ("left", Command::PrevTab)
+        )
+}
+
 /// The copy of a global binding that applies in the roots keeping the
 /// global chords ([`ContextId::inherits_global_chords`]), or `None` when the
 /// binding is not a global chord.
@@ -608,7 +622,7 @@ fn us_shifted_digit_symbol(key: &str) -> Option<&'static str> {
 fn global_chord_binding(binding: &EffectiveBinding) -> Option<EffectiveBinding> {
     let is_global_chord = binding.slot.context == ContextId::Global
         && binding.predicate == binding.slot.default_predicate
-        && binding.keys.is_global_chord();
+        && (binding.keys.is_global_chord() || is_datagrip_navigation_chord(binding));
 
     is_global_chord.then(|| EffectiveBinding {
         predicate: ContextId::global_chords_predicate().to_string(),

@@ -102,6 +102,10 @@ pub enum ResourceItem {
 }
 
 impl PaletteItem {
+    pub(crate) fn is_table(&self) -> bool {
+        matches!(self, Self::Resource(ResourceItem::Table { .. }))
+    }
+
     /// Text searched by the palette's fuzzy matcher.
     ///
     /// Each kind arm embeds the English proxy word (so the filter always
@@ -690,6 +694,32 @@ mod tests {
         PaletteCommand, PaletteEntry, PaletteItem, PaletteSection, PaletteSelection, ResourceItem,
     };
     use uuid::Uuid;
+
+    #[test]
+    fn table_navigation_excludes_actions_and_other_resource_kinds() {
+        let items = vec![
+            table("users"),
+            action("refresh_schema", "Refresh schema"),
+            PaletteItem::Resource(ResourceItem::View {
+                profile_id: Uuid::new_v4(),
+                profile_name: "shop-pg".to_string(),
+                database: None,
+                schema: None,
+                name: "users_view".to_string(),
+            }),
+            PaletteItem::Resource(ResourceItem::Collection {
+                profile_id: Uuid::new_v4(),
+                profile_name: "documents".to_string(),
+                database: "shop".to_string(),
+                name: "users".to_string(),
+            }),
+        ];
+        let tables: Vec<_> = items.into_iter().filter(PaletteItem::is_table).collect();
+        assert_eq!(tables.len(), 1);
+        assert!(
+            matches!(tables.first(), Some(PaletteItem::Resource(ResourceItem::Table { name, .. })) if name == "users")
+        );
+    }
 
     fn action(id: &'static str, name: &str) -> PaletteItem {
         PaletteItem::Action {
