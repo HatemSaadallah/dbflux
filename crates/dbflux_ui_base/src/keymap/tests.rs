@@ -206,17 +206,19 @@ fn test_global_fallback_from_sidebar() {
 }
 
 #[test]
-fn test_primary_n_available_in_sidebar_and_text_input() {
+fn new_query_available_in_sidebar_and_text_input() {
     let keymap = default_keymap();
 
-    let primary_n = KeyChord::new("n", Modifiers::primary());
+    let new_query = default_keymap()
+        .chord_for_command(ContextId::Global, Command::NewQueryTab)
+        .expect("new query shortcut");
 
     assert_eq!(
-        keymap.resolve(ContextId::Sidebar, &primary_n),
+        keymap.resolve(ContextId::Sidebar, new_query),
         Some(Command::NewQueryTab)
     );
     assert_eq!(
-        keymap.resolve(ContextId::TextInput, &primary_n),
+        keymap.resolve(ContextId::TextInput, new_query),
         Some(Command::NewQueryTab)
     );
 }
@@ -225,8 +227,10 @@ fn test_primary_n_available_in_sidebar_and_text_input() {
 fn test_command_palette_no_fallback() {
     let keymap = default_keymap();
 
-    let primary_n = KeyChord::new("n", Modifiers::primary());
-    assert_eq!(keymap.resolve(ContextId::CommandPalette, &primary_n), None);
+    let new_query = default_keymap()
+        .chord_for_command(ContextId::Global, Command::NewQueryTab)
+        .expect("new query shortcut");
+    assert_eq!(keymap.resolve(ContextId::CommandPalette, new_query), None);
 }
 
 #[test]
@@ -928,7 +932,14 @@ fn global_chords_reach_text_entry_roots() {
             ("ctrl-shift-p", Command::ToggleCommandPalette),
             ("ctrl-tab", Command::NextTab),
             ("ctrl-shift-tab", Command::PrevTab),
-            ("ctrl-w", Command::CloseCurrentTab),
+            (
+                if cfg!(target_os = "macos") {
+                    "cmd-w"
+                } else {
+                    "ctrl-f4"
+                },
+                Command::CloseCurrentTab,
+            ),
             ("ctrl-3", Command::SwitchToTab(3)),
             ("ctrl-shift-2", Command::FocusEditor),
         ] {
@@ -994,7 +1005,14 @@ fn global_chords_stop_at_dialogs_menus_and_pickers() {
     ] {
         let root = root_key_context(WORKSPACE_KEY_CONTEXT, context, &[]);
 
-        for keys in ["ctrl-tab", "ctrl-shift-p", "ctrl-1"] {
+        for keys in [
+            "ctrl-tab",
+            "ctrl-shift-p",
+            "ctrl-1",
+            "alt-1",
+            "alt-left",
+            "alt-right",
+        ] {
             assert!(
                 top_action(&keymap, keys, std::slice::from_ref(&root)).is_none(),
                 "`{keys}` must not fire while {context:?} owns the keyboard"
@@ -1036,7 +1054,10 @@ fn global_chords_in_text_roots_follow_the_overrides() {
     let close_tab = BindingSlot::new(
         ContextId::Global,
         Command::CloseCurrentTab,
-        KeyChord::new("w", Modifiers::primary()),
+        default_keymap()
+            .chord_for_command(ContextId::Global, Command::CloseCurrentTab)
+            .expect("close tab shortcut")
+            .clone(),
     );
     let palette = BindingSlot::new(
         ContextId::Global,
@@ -2957,5 +2978,91 @@ fn persisted_identifiers_round_trip_through_their_storage_forms() {
         reloaded.effective_keys(&slot),
         Some(KeySequence::parse("ctrl+t").expect("valid sequence")),
         "a stored row keeps rebinding the same binding"
+    );
+}
+
+#[cfg(not(target_os = "macos"))]
+#[test]
+fn datagrip_defaults_reach_workspace_panels_and_text_inputs() {
+    let keymap = native_keymap();
+    for context in [
+        ContextId::Sidebar,
+        ContextId::Editor,
+        ContextId::Results,
+        ContextId::TextInput,
+    ] {
+        let root = root_key_context(WORKSPACE_KEY_CONTEXT, context, &[]);
+        let input = element_stack(root.clone(), &["Input"]);
+        for (keys, command) in [
+            ("ctrl-n", Command::GoToTable),
+            ("ctrl-shift-q", Command::NewQueryTab),
+            ("ctrl-f4", Command::CloseCurrentTab),
+            ("alt-right", Command::NextTab),
+            ("alt-left", Command::PrevTab),
+            ("alt-1", Command::FocusSidebar),
+            ("ctrl-f2", Command::CancelQuery),
+        ] {
+            for stack in [std::slice::from_ref(&root), input.as_slice()] {
+                let action = top_action(&keymap, keys, stack)
+                    .unwrap_or_else(|| panic!("{keys} must be bound in {context:?}"));
+                assert!(
+                    runs_command(action.as_ref(), command),
+                    "{keys} in {context:?}"
+                );
+            }
+        }
+    }
+}
+
+#[cfg(not(target_os = "macos"))]
+#[test]
+fn datagrip_context_defaults_and_existing_editor_shortcuts() {
+    let keymap = default_keymap();
+    for (context, keys, command) in [
+        (ContextId::Sidebar, "f4", Command::Execute),
+        (ContextId::Sidebar, "ctrl-f5", Command::RefreshSchema),
+        (
+            ContextId::Editor,
+            "ctrl-alt-e",
+            Command::ToggleHistoryDropdown,
+        ),
+        (ContextId::Editor, "ctrl-/", Command::ToggleComment),
+        (ContextId::Input, "ctrl-space", Command::TriggerCompletion),
+        (ContextId::Editor, "ctrl-enter", Command::RunQuery),
+        (ContextId::Global, "ctrl-q", Command::Quit),
+    ] {
+        let chord = KeyChord::parse(keys).expect("valid chord");
+        assert_eq!(keymap.resolve(context, &chord), Some(command), "{keys}");
+        assert_eq!(keymap.chord_for_command(context, command), Some(&chord));
+    }
+    assert_eq!(
+        keymap.resolve(
+            ContextId::Global,
+            &KeyChord::parse("ctrl-w").expect("valid chord")
+        ),
+        None
+    );
+}
+
+#[cfg(target_os = "macos")]
+#[test]
+fn datagrip_changes_preserve_macos_defaults() {
+    let keymap = default_keymap();
+    for (context, keys, command) in [
+        (ContextId::Global, "cmd-n", Command::NewQueryTab),
+        (ContextId::Global, "cmd-w", Command::CloseCurrentTab),
+        (ContextId::Global, "cmd-q", Command::Quit),
+        (ContextId::Global, "ctrl-tab", Command::NextTab),
+        (ContextId::Global, "ctrl-shift-tab", Command::PrevTab),
+        (ContextId::Global, "ctrl-shift-1", Command::FocusSidebar),
+        (ContextId::Editor, "alt-h", Command::ToggleHistoryDropdown),
+    ] {
+        let chord = KeyChord::parse(keys).expect("valid chord");
+        assert_eq!(keymap.chord_for_command(context, command), Some(&chord));
+    }
+    assert!(
+        keymap
+            .keys_for_command(ContextId::Global, Command::GoToTable)
+            .is_none()
     );
 }

@@ -88,6 +88,37 @@ fn vim_normal_layer() -> KeymapLayer {
     layer
 }
 
+// JetBrains' Windows/Linux reference: https://www.jetbrains.com/help/datagrip/query-consoles.html
+fn new_query_chord() -> KeyChord {
+    if cfg!(target_os = "macos") {
+        KeyChord::new("n", Modifiers::primary())
+    } else {
+        KeyChord::new("q", Modifiers::ctrl_shift())
+    }
+}
+
+fn close_tab_chord() -> KeyChord {
+    if cfg!(target_os = "macos") {
+        KeyChord::new("w", Modifiers::primary())
+    } else {
+        KeyChord::new("f4", Modifiers::ctrl())
+    }
+}
+
+fn history_chord() -> KeyChord {
+    if cfg!(target_os = "macos") {
+        KeyChord::new("h", Modifiers::alt())
+    } else {
+        KeyChord::new(
+            "e",
+            Modifiers {
+                alt: true,
+                ..Modifiers::ctrl()
+            },
+        )
+    }
+}
+
 fn global_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::Global);
 
@@ -103,18 +134,20 @@ fn global_layer() -> KeymapLayer {
         Command::OpenConnectionManager,
     );
 
-    // Tab management — primary modifier (Cmd on macOS, Ctrl elsewhere).
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
-    layer.bind(
-        KeyChord::new("w", Modifiers::primary()),
-        Command::CloseCurrentTab,
-    );
+    // Keep the macOS map; Linux and Windows use DataGrip console/tab keys.
+    layer.bind(new_query_chord(), Command::NewQueryTab);
+    layer.bind(close_tab_chord(), Command::CloseCurrentTab);
     // Quit goes through the workspace, which asks first when a query is still
     // running. macOS also shows this chord beside Quit in the application menu.
     layer.bind(KeyChord::new("q", Modifiers::primary()), Command::Quit);
+    #[cfg(not(target_os = "macos"))]
+    {
+        layer.bind(KeyChord::new("n", Modifiers::ctrl()), Command::GoToTable);
+        layer.bind(KeyChord::new("right", Modifiers::alt()), Command::NextTab);
+        layer.bind(KeyChord::new("left", Modifiers::alt()), Command::PrevTab);
+        layer.bind(KeyChord::new("f2", Modifiers::ctrl()), Command::CancelQuery);
+        layer.bind(KeyChord::new("1", Modifiers::alt()), Command::FocusSidebar);
+    }
     // Ctrl+Tab / Ctrl+Shift+Tab stay literal Ctrl on every platform — that is
     // the long-standing tabbed-UI idiom (browsers, terminals). Cmd+Tab on
     // macOS is the system app switcher and must not be shadowed.
@@ -342,10 +375,7 @@ fn bind_workspace_commands(layer: &mut KeymapLayer) {
 fn sidebar_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::Sidebar);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
     layer.bind(KeyChord::new("/", Modifiers::none()), Command::FocusSearch);
     layer.bind(
         KeyChord::new("q", Modifiers::none()),
@@ -388,6 +418,15 @@ fn sidebar_layer() -> KeymapLayer {
     layer.bind(KeyChord::new("u", Modifiers::ctrl()), Command::PageUp);
     layer.bind(KeyChord::new("pageup", Modifiers::none()), Command::PageUp);
 
+    // F4 opens the selected table or the selected connection's query console.
+    #[cfg(not(target_os = "macos"))]
+    {
+        layer.bind(KeyChord::new("f4", Modifiers::none()), Command::Execute);
+        layer.bind(
+            KeyChord::new("f5", Modifiers::ctrl()),
+            Command::RefreshSchema,
+        );
+    }
     // Actions
     layer.bind(KeyChord::new("enter", Modifiers::none()), Command::Execute);
     layer.bind(
@@ -462,10 +501,7 @@ fn editor_layer() -> KeymapLayer {
     layer.bind(KeyChord::new("enter", Modifiers::none()), Command::Execute);
 
     // Query history / saved queries
-    layer.bind(
-        KeyChord::new("h", Modifiers::alt()),
-        Command::ToggleHistoryDropdown,
-    );
+    layer.bind(history_chord(), Command::ToggleHistoryDropdown);
     layer.bind(
         KeyChord::new("p", Modifiers::primary()),
         Command::OpenSavedQueries,
@@ -573,10 +609,7 @@ fn history_modal_layer() -> KeymapLayer {
 fn results_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::Results);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
 
     // Panel navigation (Ctrl+hjkl) — vim-style, literal Ctrl on every platform.
     layer.bind(KeyChord::new("h", Modifiers::ctrl()), Command::FocusLeft);
@@ -774,10 +807,7 @@ fn confirm_modal_layer() -> KeymapLayer {
 fn background_tasks_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::BackgroundTasks);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
 
     // Panel navigation (Ctrl+hjkl) — vim-style, literal Ctrl on every platform.
     layer.bind(KeyChord::new("h", Modifiers::ctrl()), Command::FocusLeft);
@@ -1019,10 +1049,7 @@ fn connection_manager_layer() -> KeymapLayer {
 fn form_navigation_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::FormNavigation);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
 
     layer.bind(KeyChord::new("j", Modifiers::none()), Command::SelectNext);
     layer.bind(
@@ -1067,10 +1094,7 @@ fn form_navigation_layer() -> KeymapLayer {
 fn text_input_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::TextInput);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
 
     // Save must keep working while a text buffer owns the keyboard: the S3
     // object editors report `ContextId::TextInput`, which has no parent
@@ -1091,10 +1115,7 @@ fn context_bar_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::ContextBar);
 
     // Commands that should pass through to the workspace/document.
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
     layer.bind(
         KeyChord::new("enter", Modifiers::primary()),
         Command::RunQuery,
@@ -1103,10 +1124,7 @@ fn context_bar_layer() -> KeymapLayer {
         KeyChord::new("enter", Modifiers::primary_shift()),
         Command::RunQueryInNewTab,
     );
-    layer.bind(
-        KeyChord::new("w", Modifiers::primary()),
-        Command::CloseCurrentTab,
-    );
+    layer.bind(close_tab_chord(), Command::CloseCurrentTab);
     layer.bind(KeyChord::new("s", Modifiers::primary()), Command::SaveQuery);
     layer.bind(
         KeyChord::new("s", Modifiers::primary_shift()),
@@ -1399,10 +1417,7 @@ fn document_tree_layer() -> KeymapLayer {
 fn dropdown_layer() -> KeymapLayer {
     let mut layer = KeymapLayer::new(ContextId::Dropdown);
 
-    layer.bind(
-        KeyChord::new("n", Modifiers::primary()),
-        Command::NewQueryTab,
-    );
+    layer.bind(new_query_chord(), Command::NewQueryTab);
 
     // Navigation within dropdown
     layer.bind(KeyChord::new("j", Modifiers::none()), Command::SelectNext);

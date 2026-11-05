@@ -5215,7 +5215,7 @@ sidebar:
     unavailable_folders: "%{count} unavailable"
   tabs:
     dashboards: "Dashboards"
-    connections: CONNECTIONS
+    connections: Database Explorer
     scripts: SCRIPTS
   root_section:
     confirm_message: "Run \"%{action}\" on \"%{item}\"?"
@@ -5507,7 +5507,7 @@ toast:
     hidden_more: "%{count} more"
 workspace:
   rail:
-    connections: "Connections"
+    connections: "Database Explorer"
     scripts: "Scripts"
     dashboards: "Dashboards"
     approvals: "MCP approvals"

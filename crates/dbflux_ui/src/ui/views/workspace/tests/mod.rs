@@ -16,6 +16,8 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 mod close_flush;
+#[cfg(not(target_os = "macos"))]
+mod datagrip;
 mod document_focus;
 
 fn new_workspace(
