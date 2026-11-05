@@ -5216,7 +5216,7 @@ sidebar:
   tabs:
     dashboards: "Dashboards"
     connections: Database Explorer
-    scripts: SCRIPTS
+    scripts: Scripts
   root_section:
     confirm_message: "Run \"%{action}\" on \"%{item}\"?"
     action:

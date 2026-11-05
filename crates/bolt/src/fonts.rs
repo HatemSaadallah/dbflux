@@ -203,9 +203,9 @@ pub fn display_family(cx: &App) -> SharedString {
 /// monospace faces resolve to the chosen interface, display and editor
 /// families; any other name is returned unchanged.
 pub fn family_for(cx: &App, bundled: &'static str) -> SharedString {
+    // The display face is the interface face, so one arm serves both
     match bundled {
         AppFonts::INTERFACE => ui_family(cx),
-        AppFonts::DISPLAY => display_family(cx),
         AppFonts::MONO => editor_family(cx),
         other => SharedString::from(other),
     }

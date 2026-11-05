@@ -1150,7 +1150,6 @@ fn to_pixel_points(points: &[Point<f32>]) -> Vec<Point<Pixels>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tokens::ChamferCut;
     use gpui::{Context, Entity, TestAppContext, size};
 
     fn rect(x: f32, y: f32, width: f32, height: f32) -> Bounds<Pixels> {
@@ -1194,7 +1193,7 @@ mod tests {
     fn outside_polygons_cover_only_the_cut_corners() {
         let triangles = chamfer_outside_polygons(
             rect(10.0, 20.0, 200.0, 100.0),
-            ChamferCut::CARD,
+            px(14.0),
             ChamferCorners::default(),
         );
 
@@ -1210,7 +1209,7 @@ mod tests {
 
         let shape = chamfer_points(
             rect(10.0, 20.0, 200.0, 100.0),
-            ChamferCut::CARD,
+            px(14.0),
             ChamferCorners::default(),
         );
         assert!(!contains(&shape, 12.0, 22.0));
@@ -1221,14 +1220,14 @@ mod tests {
     fn outside_polygons_follow_the_cut_corners_and_skip_empty_shapes() {
         let top_left = chamfer_outside_polygons(
             rect(0.0, 0.0, 100.0, 30.0),
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeft,
         );
         assert_eq!(top_left.len(), 1);
 
         let bottom_right = chamfer_outside_polygons(
             rect(0.0, 0.0, 100.0, 30.0),
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::BottomRight,
         );
         assert_eq!(
@@ -1239,7 +1238,7 @@ mod tests {
         assert!(
             chamfer_outside_polygons(
                 rect(0.0, 0.0, 0.0, 30.0),
-                ChamferCut::CARD,
+                px(14.0),
                 ChamferCorners::default()
             )
             .is_empty()
@@ -1258,7 +1257,7 @@ mod tests {
     fn standard_cut_trims_top_left_and_bottom_right() {
         let points = chamfer_points(
             rect(0.0, 0.0, 100.0, 30.0),
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::default(),
         );
 
@@ -1279,7 +1278,7 @@ mod tests {
     fn tab_cut_trims_only_top_left() {
         let points = chamfer_points(
             rect(0.0, 0.0, 100.0, 30.0),
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeft,
         );
 
@@ -1299,7 +1298,7 @@ mod tests {
     fn menu_segment_cut_trims_only_bottom_right() {
         let points = chamfer_points(
             rect(0.0, 0.0, 26.0, 28.0),
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::BottomRight,
         );
 
@@ -1319,7 +1318,7 @@ mod tests {
     fn points_are_offset_by_bounds_origin() {
         let points = chamfer_points(
             rect(10.0, 20.0, 50.0, 30.0),
-            ChamferCut::KEYCAP,
+            px(4.0),
             ChamferCorners::default(),
         );
 
@@ -1381,12 +1380,12 @@ mod tests {
             rect(0.0, 0.0, 20.0, -1.0),
         ] {
             assert!(
-                chamfer_points(bounds, ChamferCut::CONTROL, ChamferCorners::default()).is_empty()
+                chamfer_points(bounds, px(6.0), ChamferCorners::default()).is_empty()
             );
             assert!(
                 chamfer_border_polygons(
                     bounds,
-                    ChamferCut::CONTROL,
+                    px(6.0),
                     ChamferCorners::default(),
                     Borders::THIN
                 )
@@ -1395,7 +1394,7 @@ mod tests {
             assert!(
                 chamfer_top_edge_polygon(
                     bounds,
-                    ChamferCut::CONTROL,
+                    px(6.0),
                     ChamferCorners::TopLeft,
                     Borders::MEDIUM
                 )
@@ -1404,7 +1403,7 @@ mod tests {
             assert!(
                 chamfer_bottom_edge_polygon(
                     bounds,
-                    ChamferCut::CONTROL,
+                    px(6.0),
                     ChamferCorners::default(),
                     Borders::MEDIUM
                 )
@@ -1418,7 +1417,7 @@ mod tests {
         let bounds = rect(0.0, 0.0, 100.0, 30.0);
         let pieces = chamfer_border_polygons(
             bounds,
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::default(),
             Borders::THIN,
         );
@@ -1452,7 +1451,7 @@ mod tests {
         let bounds = rect(0.0, 0.0, 100.0, 30.0);
         let pieces = chamfer_border_polygons(
             bounds,
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeft,
             Borders::THIN,
         );
@@ -1468,7 +1467,7 @@ mod tests {
         let bounds = rect(10.0, 0.0, 100.0, 36.0);
         let polygon = chamfer_top_edge_polygon(
             bounds,
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeft,
             Borders::MEDIUM,
         );
@@ -1484,7 +1483,7 @@ mod tests {
         let bounds = rect(0.0, 0.0, 100.0, 40.0);
         let polygon = chamfer_left_edge_polygon(
             bounds,
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeftBottomRight,
             Borders::MEDIUM,
         );
@@ -1500,13 +1499,13 @@ mod tests {
         let bounds = rect(0.0, 0.0, 40.0, 20.0);
         let square_bottom = chamfer_bottom_edge_polygon(
             bounds,
-            ChamferCut::KEYCAP,
+            px(4.0),
             ChamferCorners::TopLeft,
             Borders::MEDIUM,
         );
         let cut_bottom = chamfer_bottom_edge_polygon(
             bounds,
-            ChamferCut::KEYCAP,
+            px(4.0),
             ChamferCorners::default(),
             Borders::MEDIUM,
         );
@@ -1551,7 +1550,7 @@ mod tests {
         let ring = ChamferRing::focus(gpui::blue());
         let outline = chamfer_ring_points(
             bounds,
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::default(),
             &ring,
         );
@@ -1569,7 +1568,7 @@ mod tests {
             ],
         );
 
-        let shape = chamfer_points(bounds, ChamferCut::CONTROL, ChamferCorners::default());
+        let shape = chamfer_points(bounds, px(6.0), ChamferCorners::default());
         let gap = top_left_diagonal_gap(&outline, &shape);
         assert!(
             (gap - 0.75).abs() < 1e-3,
@@ -1602,11 +1601,11 @@ mod tests {
         let ring = ChamferRing::focus(gpui::blue()).outside(Borders::MEDIUM);
         let outline = chamfer_ring_points(
             bounds,
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::default(),
             &ring,
         );
-        let shape = chamfer_points(bounds, ChamferCut::CONTROL, ChamferCorners::default());
+        let shape = chamfer_points(bounds, px(6.0), ChamferCorners::default());
         let centerline = 2.0 + 0.75;
 
         let points = raw(&outline);
@@ -1629,7 +1628,7 @@ mod tests {
         let ring = ChamferRing::focus(gpui::blue());
         let tab = chamfer_ring_points(
             rect(0.0, 0.0, 60.0, 30.0),
-            ChamferCut::INPUT,
+            px(8.0),
             ChamferCorners::TopLeft,
             &ring,
         );
@@ -1641,7 +1640,7 @@ mod tests {
 
         let tiny = chamfer_ring_points(
             rect(0.0, 0.0, 1.0, 1.0),
-            ChamferCut::CONTROL,
+            px(6.0),
             ChamferCorners::default(),
             &ring,
         );
@@ -1649,7 +1648,7 @@ mod tests {
         assert!(
             chamfer_ring_points(
                 rect(0.0, 0.0, 0.0, 10.0),
-                ChamferCut::CONTROL,
+                px(6.0),
                 ChamferCorners::default(),
                 &ring
             )
@@ -1857,7 +1856,7 @@ mod tests {
                 .w(px(120.0))
                 .h(px(28.0))
                 .child(
-                    Chamfer::new(ChamferCut::CONTROL)
+                    Chamfer::new(px(6.0))
                         .fill(gpui::black())
                         .fill_hover(gpui::white())
                         .fill_active(gpui::red())

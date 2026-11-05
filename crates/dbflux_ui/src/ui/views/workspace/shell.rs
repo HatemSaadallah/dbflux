@@ -415,7 +415,7 @@ impl Workspace {
                             .font_weight(FontWeight::BLACK)
                             .text_size(ShellMetrics::EMPTY_TITLE_FONT)
                             .text_color(dbflux_components::tokens::ChromeColors::strong(theme))
-                            .child(dbflux_i18n::t!("workspace.empty.title").to_uppercase()),
+                            .child(dbflux_i18n::t!("workspace.empty.title")),
                     )
                     .child(
                         Text::body(dbflux_i18n::t!("workspace.empty.subtitle")).muted_foreground(),

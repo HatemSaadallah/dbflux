@@ -225,7 +225,7 @@ mod tests {
         cx.update(|cx| apply_theme(ThemeSetting::Light, AppStyle::Default, None, cx));
         cx.update(|cx| {
             let theme = Theme::global(cx);
-            assert_eq!(theme.colors.background, rgb_to_hsla(0xF6F4F7));
+            assert_eq!(theme.colors.background, rgb_to_hsla(0xFFFFFF));
             assert_eq!(theme.tokens.button_primary.color, expected_primary());
             assert_eq!(theme.tokens.primary.color, expected_primary());
             // On light surfaces the accent doubles as the text accent.
@@ -235,7 +235,7 @@ mod tests {
         cx.update(|cx| apply_theme(ThemeSetting::Dark, AppStyle::Default, None, cx));
         cx.update(|cx| {
             let theme = Theme::global(cx);
-            assert_eq!(theme.colors.background, rgb_to_hsla(0x09090B));
+            assert_eq!(theme.colors.background, rgb_to_hsla(0x1E1F22));
             assert_eq!(theme.tokens.button_primary.color, expected_primary());
             assert_eq!(theme.tokens.primary.color, expected_primary());
             assert_eq!(theme.colors.ring, expected_tint());
@@ -315,7 +315,7 @@ mod tests {
             let expected = variant_for_appearance(cx.window_appearance());
             assert_eq!(ThemeSettingGlobal::get(cx), expected);
             assert_eq!(
-                Theme::global(cx).colors.background == rgb_to_hsla(0xF6F4F7),
+                Theme::global(cx).colors.background == rgb_to_hsla(0xFFFFFF),
                 expected == ThemeSetting::Light
             );
         });

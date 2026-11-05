@@ -592,13 +592,13 @@ impl ChromeColors {
     }
 
     /// The desk under the islands: the main window ground and the frame of
-    /// the Settings and Connection Manager windows. `#050507` on dark,
-    /// `#E6E1E9` on light.
+    /// the Settings and Connection Manager windows. `#141517` on dark,
+    /// `#E9EAEE` on light.
     pub fn desk(theme: &gpui_component::Theme) -> Hsla {
         if theme.mode.is_dark() {
-            rgb(0x050507).into()
+            rgb(0x141517).into()
         } else {
-            rgb(0xE6E1E9).into()
+            rgb(0xE9EAEE).into()
         }
     }
 

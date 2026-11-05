@@ -94,14 +94,14 @@ impl BannerColors {
     /// wash of itself.
     pub fn dark() -> Self {
         Self {
-            info_bg: from_hex(0x6EA8FF, 0.12),
-            info_fg: from_hex(0x6EA8FF, 1.0),
-            success_bg: from_hex(0x7BE0A0, 0.12),
-            success_fg: from_hex(0x7BE0A0, 1.0),
-            warning_bg: from_hex(0xFFC23D, 0.12),
-            warning_fg: from_hex(0xFFC23D, 1.0),
-            error_bg: from_hex(0xFF6B5E, 0.12),
-            error_fg: from_hex(0xFF6B5E, 1.0),
+            info_bg: from_hex(0x548AF7, 0.12),
+            info_fg: from_hex(0x548AF7, 1.0),
+            success_bg: from_hex(0x5FB865, 0.12),
+            success_fg: from_hex(0x5FB865, 1.0),
+            warning_bg: from_hex(0xF2C55C, 0.12),
+            warning_fg: from_hex(0xF2C55C, 1.0),
+            error_bg: from_hex(0xF75464, 0.12),
+            error_fg: from_hex(0xF75464, 1.0),
         }
     }
 
@@ -158,10 +158,10 @@ impl RowStateColors {
     pub fn dark() -> Self {
         Self {
             dirty: None,
-            saving: from_hex(0xFFC23D, 0.10),
-            error: from_hex(0xFF6B5E, 0.15),
-            pending_insert: from_hex(0x7BE0A0, 0.15),
-            pending_delete: from_hex(0xFF6B5E, 0.10),
+            saving: from_hex(0xF2C55C, 0.10),
+            error: from_hex(0xF75464, 0.15),
+            pending_insert: from_hex(0x5FB865, 0.15),
+            pending_delete: from_hex(0xF75464, 0.10),
         }
     }
 
@@ -226,16 +226,16 @@ impl ChartColors {
     /// Chart chrome tokens for the dark palette.
     pub fn dark() -> Self {
         Self {
-            panel_bg: from_hex(0x100F13, 1.0),
-            panel_border: from_hex(0x232128, 1.0),
-            label_fg: from_hex(0x8E8996, 1.0),
-            value_fg: from_hex(0xF7F4F7, 1.0),
-            muted_fg: from_hex(0x8E8996, 1.0),
-            hover_bg: from_hex(0xFFFFFF, 0.04),
-            pill_bg: from_hex(0x1A181E, 1.0),
-            pill_border: from_hex(0x37333D, 1.0),
-            checkbox_checked: from_hex(0x8E8996, 1.0),
-            stats_accent: from_hex(0x6FD3D8, 1.0),
+            panel_bg: from_hex(0x1E1F22, 1.0),
+            panel_border: from_hex(0x393B40, 1.0),
+            label_fg: from_hex(0x868A91, 1.0),
+            value_fg: from_hex(0xDFE1E5, 1.0),
+            muted_fg: from_hex(0x868A91, 1.0),
+            hover_bg: from_hex(0xFFFFFF, 0.05),
+            pill_bg: from_hex(0x2B2D30, 1.0),
+            pill_border: from_hex(0x4E5157, 1.0),
+            checkbox_checked: from_hex(0x868A91, 1.0),
+            stats_accent: from_hex(0x2AACB8, 1.0),
         }
     }
 
@@ -243,14 +243,14 @@ impl ChartColors {
     pub fn light() -> Self {
         Self {
             panel_bg: from_hex(0xFFFFFF, 1.0),
-            panel_border: from_hex(0xE3DEE6, 1.0),
-            label_fg: from_hex(0x6B6572, 1.0),
-            value_fg: from_hex(0x141118, 1.0),
-            muted_fg: from_hex(0x6B6572, 1.0),
-            hover_bg: from_hex(0x141118, 0.04),
-            pill_bg: from_hex(0xEEEAF0, 1.0),
-            pill_border: from_hex(0xCBC4D1, 1.0),
-            checkbox_checked: from_hex(0x6B6572, 1.0),
+            panel_border: from_hex(0xDFE1E5, 1.0),
+            label_fg: from_hex(0x6C707E, 1.0),
+            value_fg: from_hex(0x000000, 1.0),
+            muted_fg: from_hex(0x6C707E, 1.0),
+            hover_bg: from_hex(0x000000, 0.04),
+            pill_bg: from_hex(0xF2F3F5, 1.0),
+            pill_border: from_hex(0xC9CCD6, 1.0),
+            checkbox_checked: from_hex(0x6C707E, 1.0),
             stats_accent: from_hex(0x0F7C82, 1.0),
         }
     }
@@ -338,7 +338,7 @@ mod tests {
             }
         }
 
-        assert_eq!(BannerColors::dark().error_fg, from_hex(0xFF6B5E, 1.0));
+        assert_eq!(BannerColors::dark().error_fg, from_hex(0xF75464, 1.0));
         assert_eq!(BannerColors::light().error_fg, from_hex(0xC7362B, 1.0));
     }
 
@@ -362,7 +362,7 @@ mod tests {
             palette::set_mode(cx, PaletteMode::Dark);
             let dark = RowStateColors::for_current(cx);
             assert_eq!(dark, RowStateColors::dark());
-            assert_eq!(dark.saving, from_hex(0xFFC23D, 0.10));
+            assert_eq!(dark.saving, from_hex(0xF2C55C, 0.10));
         });
     }
 

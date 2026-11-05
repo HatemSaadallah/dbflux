@@ -433,7 +433,7 @@ impl Palette {
 
             // Neutral greys in the style of a dark JetBrains IDE: a darker desk
             // between rounded panels, a raised grey for controls
-            background: rgb_to_hsla(0x141517),
+            background: rgb_to_hsla(0x1E1F22),
             panel: rgb_to_hsla(0x1E1F22),
             raised: rgb_to_hsla(0x2B2D30),
             line: rgb_to_hsla(0x393B40),
@@ -476,9 +476,9 @@ impl Palette {
         Self {
             mode: ThemeMode::Light,
 
-            background: rgb_to_hsla(0xEBECF0),
+            background: rgb_to_hsla(0xFFFFFF),
             panel: rgb_to_hsla(0xFFFFFF),
-            raised: rgb_to_hsla(0xF7F8FA),
+            raised: rgb_to_hsla(0xF2F3F5),
             line: rgb_to_hsla(0xDFE1E5),
             line_strong: rgb_to_hsla(0xC9CCD6),
             row_divider: rgb_to_hsla(0xEBECF0),
@@ -933,7 +933,7 @@ mod tests {
         cx.update(|cx| install(brand.clone(), PaletteMode::Dark, Density::Default, cx));
         cx.update(|cx| {
             let theme = Theme::global(cx);
-            assert_eq!(theme.colors.background, rgb_to_hsla(0x09090B));
+            assert_eq!(theme.colors.background, rgb_to_hsla(0x1E1F22));
             assert_eq!(theme.tokens.button_primary.color, brand.accent);
             assert_eq!(theme.tokens.primary.color, brand.accent);
             assert_eq!(theme.colors.ring, brand.accent_tint);
@@ -942,7 +942,7 @@ mod tests {
         cx.update(|cx| apply_theme(PaletteMode::Light, Density::Default, None, cx));
         cx.update(|cx| {
             let theme = Theme::global(cx);
-            assert_eq!(theme.colors.background, rgb_to_hsla(0xF6F4F7));
+            assert_eq!(theme.colors.background, rgb_to_hsla(0xFFFFFF));
             assert_eq!(theme.tokens.button_primary.color, brand.accent);
             assert_eq!(theme.tokens.primary.color, brand.accent);
             assert_eq!(theme.colors.ring, brand.accent);
@@ -956,8 +956,8 @@ mod tests {
         cx.update(gpui_component::init);
 
         for (mode, background, line_number) in [
-            (PaletteMode::Dark, 0x09090B, 0x8E8996),
-            (PaletteMode::Light, 0xF6F4F7, 0x6B6572),
+            (PaletteMode::Dark, 0x1E1F22, 0x868A91),
+            (PaletteMode::Light, 0xFFFFFF, 0x6C707E),
         ] {
             cx.update(|cx| install(test_brand(), mode, Density::Default, cx));
             cx.update(|cx| {
