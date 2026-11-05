@@ -431,16 +431,18 @@ impl Palette {
         Self {
             mode: ThemeMode::Dark,
 
-            background: rgb_to_hsla(0x09090B),
-            panel: rgb_to_hsla(0x100F13),
-            raised: rgb_to_hsla(0x1A181E),
-            line: rgb_to_hsla(0x232128),
-            line_strong: rgb_to_hsla(0x37333D),
-            row_divider: rgb_to_hsla(0x18161B),
+            // Neutral greys in the style of a dark JetBrains IDE: a darker desk
+            // between rounded panels, a raised grey for controls
+            background: rgb_to_hsla(0x141517),
+            panel: rgb_to_hsla(0x1E1F22),
+            raised: rgb_to_hsla(0x2B2D30),
+            line: rgb_to_hsla(0x393B40),
+            line_strong: rgb_to_hsla(0x4E5157),
+            row_divider: rgb_to_hsla(0x26282B),
 
-            text_strong: rgb_to_hsla(0xF7F4F7),
-            text_body: rgb_to_hsla(0xC6C3CC),
-            text_muted: rgb_to_hsla(0x8E8996),
+            text_strong: rgb_to_hsla(0xDFE1E5),
+            text_body: rgb_to_hsla(0xBCBEC4),
+            text_muted: rgb_to_hsla(0x868A91),
 
             accent: brand.accent,
             accent_hover: brand.accent_hover,
@@ -448,23 +450,23 @@ impl Palette {
             tint: brand.accent_tint,
             on_accent: brand.on_accent,
 
-            success: rgb_to_hsla(0x7BE0A0),
-            info: rgb_to_hsla(0x6EA8FF),
-            warning: rgb_to_hsla(0xFFC23D),
-            danger: rgb_to_hsla(0xFF6B5E),
-            cyan: rgb_to_hsla(0x6FD3D8),
-            semantic_foreground: rgb_to_hsla(0x09090B),
+            success: rgb_to_hsla(0x5FB865),
+            info: rgb_to_hsla(0x548AF7),
+            warning: rgb_to_hsla(0xF2C55C),
+            danger: rgb_to_hsla(0xF75464),
+            cyan: rgb_to_hsla(0x2AACB8),
+            semantic_foreground: rgb_to_hsla(0x1E1F22),
 
-            hover_wash: rgb_to_hsla_alpha(0xFFFFFF, 0.04),
-            alternating_row_wash: rgb_to_hsla_alpha(0xFFFFFF, 0.012),
+            hover_wash: rgb_to_hsla_alpha(0xFFFFFF, 0.05),
+            alternating_row_wash: rgb_to_hsla_alpha(0xFFFFFF, 0.015),
             selected_row_wash: washes.selected_row,
             selected_item_wash: washes.selected_item,
             text_selection: washes.text_selection,
             drop_target: washes.drop_target,
-            overlay: rgb_to_hsla_alpha(0x050507, 0.62),
+            overlay: rgb_to_hsla_alpha(0x000000, 0.55),
             progress: brand.accent_tint,
 
-            syntax: SyntaxColors::dark().with_keyword(brand.accent_tint),
+            syntax: SyntaxColors::dark(),
         }
     }
 
@@ -474,16 +476,16 @@ impl Palette {
         Self {
             mode: ThemeMode::Light,
 
-            background: rgb_to_hsla(0xF6F4F7),
+            background: rgb_to_hsla(0xEBECF0),
             panel: rgb_to_hsla(0xFFFFFF),
-            raised: rgb_to_hsla(0xEEEAF0),
-            line: rgb_to_hsla(0xE3DEE6),
-            line_strong: rgb_to_hsla(0xCBC4D1),
-            row_divider: rgb_to_hsla(0xF0ECF2),
+            raised: rgb_to_hsla(0xF7F8FA),
+            line: rgb_to_hsla(0xDFE1E5),
+            line_strong: rgb_to_hsla(0xC9CCD6),
+            row_divider: rgb_to_hsla(0xEBECF0),
 
-            text_strong: rgb_to_hsla(0x141118),
-            text_body: rgb_to_hsla(0x3B3740),
-            text_muted: rgb_to_hsla(0x6B6572),
+            text_strong: rgb_to_hsla(0x000000),
+            text_body: rgb_to_hsla(0x2B2D30),
+            text_muted: rgb_to_hsla(0x6C707E),
 
             accent: brand.accent,
             accent_hover: brand.accent_hover,
@@ -508,7 +510,7 @@ impl Palette {
             overlay: rgb_to_hsla_alpha(0x1E1423, 0.28),
             progress: brand.accent,
 
-            syntax: SyntaxColors::light().with_keyword(brand.accent),
+            syntax: SyntaxColors::light(),
         }
     }
 }
@@ -791,11 +793,11 @@ mod tests {
         for (mode, colors) in [
             (
                 PaletteMode::Dark,
-                SyntaxColors::dark().with_keyword(test_brand().accent_tint),
+                SyntaxColors::dark(),
             ),
             (
                 PaletteMode::Light,
-                SyntaxColors::light().with_keyword(test_brand().accent),
+                SyntaxColors::light(),
             ),
         ] {
             cx.update(|cx| {
@@ -830,13 +832,13 @@ mod tests {
         for (mode, colors, property) in [
             (
                 PaletteMode::Dark,
-                SyntaxColors::dark().with_keyword(test_brand().accent_tint),
-                Hsla::from(gpui::rgb(0xA9A4B2)),
+                SyntaxColors::dark(),
+                Hsla::from(gpui::rgb(0xC77DBB)),
             ),
             (
                 PaletteMode::Light,
-                SyntaxColors::light().with_keyword(test_brand().accent),
-                Hsla::from(gpui::rgb(0x5C5766)),
+                SyntaxColors::light(),
+                Hsla::from(gpui::rgb(0x871094)),
             ),
         ] {
             let theme_mode = match mode {

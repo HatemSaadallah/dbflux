@@ -17,15 +17,15 @@ use dbflux_core::{AppStyle, ThemeSetting};
 use gpui::{App, Hsla, Window, WindowAppearance};
 use gpui_component::theme::Theme;
 
-/// Byzantine `#702963`, the solid fill of a primary control in both variants.
-const ACCENT: u32 = 0x702963;
-/// Byzantine hover `#7F3171`.
-const ACCENT_HOVER: u32 = 0x7F3171;
-/// Byzantine deep `#4A1B41`, the pressed state.
-const ACCENT_PRESSED: u32 = 0x4A1B41;
-/// Text-accent tint `#D48CC8` on dark surfaces; on light surfaces the accent
+/// IDE blue `#3574F0`, the solid fill of a primary control in both variants.
+const ACCENT: u32 = 0x3574F0;
+/// Hover `#467FF2`.
+const ACCENT_HOVER: u32 = 0x467FF2;
+/// Pressed `#2E5FC4`.
+const ACCENT_PRESSED: u32 = 0x2E5FC4;
+/// Text-accent tint `#548AF7` on dark surfaces; on light surfaces the accent
 /// itself takes this role.
-const ACCENT_TINT: u32 = 0xD48CC8;
+const ACCENT_TINT: u32 = 0x548AF7;
 const ON_ACCENT: u32 = 0xFFFFFF;
 
 /// The DBFlux brand: the byzantine accent of the Bolt Byzantium palette.
@@ -338,24 +338,25 @@ mod tests {
             .map(hex_of)
     }
 
-    /// The SQL editor's highlight theme and the tint accessor follow the
-    /// palette's syntax roles in both variants, and the syntax keyword takes
-    /// the byzantine accent role: `#D48CC8` on dark, `#702963` on light. The
-    /// coupling between the accent and the editor is pinned here, on the
-    /// product side, because it is DBFlux's rule, not Bolt's.
+    /// The SQL editor's highlight theme follows the palette's syntax roles in
+    /// both variants. Keywords keep the palette's own colour (orange on dark,
+    /// blue on light, as in other IDEs) instead of the accent, and the tint
+    /// accessor keeps the accent role: `#548AF7` on dark, `#3574F0` on light.
     #[gpui::test]
     fn editor_syntax_and_tint_follow_the_palette(cx: &mut TestAppContext) {
         cx.update(gpui_component::init);
 
-        for (setting, expected, keyword_hex) in [
+        for (setting, expected, keyword_hex, tint_hex) in [
             (
                 ThemeSetting::Dark,
-                bolt::tokens::SyntaxColors::dark().with_keyword(brand().accent_tint),
+                bolt::tokens::SyntaxColors::dark(),
+                0xCF8E6D,
                 ACCENT_TINT,
             ),
             (
                 ThemeSetting::Light,
-                bolt::tokens::SyntaxColors::light().with_keyword(brand().accent),
+                bolt::tokens::SyntaxColors::light(),
+                0x0033B3,
                 ACCENT,
             ),
         ] {
@@ -389,7 +390,7 @@ mod tests {
 
                 assert_eq!(
                     hex_of(crate::tokens::ChromeColors::tint(theme)),
-                    hex_of(expected.keyword),
+                    tint_hex,
                     "{setting:?}: tint"
                 );
             });

@@ -19,59 +19,36 @@ pub struct AppFonts;
 
 impl AppFonts {
     /// Interface face: labels, buttons, menus, settings, body copy, tabs and tree rows.
-    pub const INTERFACE: &'static str = "Archivo";
-    /// Display face: uppercase section labels and large titles. Never used for body text.
-    pub const DISPLAY: &'static str = "Archivo Expanded";
+    /// Inter is the face JetBrains IDEs use for their interface.
+    pub const INTERFACE: &'static str = "Inter";
+    /// Section labels and large titles share the interface face, in sentence case,
+    /// as IDE tool windows do.
+    pub const DISPLAY: &'static str = "Inter";
     /// Data face: grid cells, keys, queries, identifiers, key hints and numeric readouts.
     pub const MONO: &'static str = "JetBrains Mono";
     pub const MONO_FALLBACK: &'static str = "monospace";
 }
 
-pub const BUNDLED_FONT_ASSETS: [BundledFontAsset; 17] = [
+pub const BUNDLED_FONT_ASSETS: [BundledFontAsset; 12] = [
     BundledFontAsset {
         family: AppFonts::INTERFACE,
-        file_name: "Archivo-Regular.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-Regular.ttf"),
-    },
-    BundledFontAsset {
-        family: AppFonts::INTERFACE,
-        file_name: "Archivo-Italic.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-Italic.ttf"),
+        file_name: "Inter-Regular.ttf",
+        data: include_bytes!("../assets/fonts/Inter-Regular.ttf"),
     },
     BundledFontAsset {
         family: AppFonts::INTERFACE,
-        file_name: "Archivo-Medium.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-Medium.ttf"),
+        file_name: "Inter-Medium.ttf",
+        data: include_bytes!("../assets/fonts/Inter-Medium.ttf"),
     },
     BundledFontAsset {
         family: AppFonts::INTERFACE,
-        file_name: "Archivo-SemiBold.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-SemiBold.ttf"),
+        file_name: "Inter-SemiBold.ttf",
+        data: include_bytes!("../assets/fonts/Inter-SemiBold.ttf"),
     },
     BundledFontAsset {
         family: AppFonts::INTERFACE,
-        file_name: "Archivo-Bold.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-Bold.ttf"),
-    },
-    BundledFontAsset {
-        family: AppFonts::INTERFACE,
-        file_name: "Archivo-ExtraBold.ttf",
-        data: include_bytes!("../assets/fonts/Archivo-ExtraBold.ttf"),
-    },
-    BundledFontAsset {
-        family: AppFonts::DISPLAY,
-        file_name: "ArchivoExpanded-Bold.ttf",
-        data: include_bytes!("../assets/fonts/ArchivoExpanded-Bold.ttf"),
-    },
-    BundledFontAsset {
-        family: AppFonts::DISPLAY,
-        file_name: "ArchivoExpanded-ExtraBold.ttf",
-        data: include_bytes!("../assets/fonts/ArchivoExpanded-ExtraBold.ttf"),
-    },
-    BundledFontAsset {
-        family: AppFonts::DISPLAY,
-        file_name: "ArchivoExpanded-Black.ttf",
-        data: include_bytes!("../assets/fonts/ArchivoExpanded-Black.ttf"),
+        file_name: "Inter-Bold.ttf",
+        data: include_bytes!("../assets/fonts/Inter-Bold.ttf"),
     },
     BundledFontAsset {
         family: AppFonts::MONO,
@@ -139,8 +116,8 @@ mod tests {
 
     #[test]
     fn font_contract_splits_interface_display_and_data_families() {
-        assert_eq!(AppFonts::INTERFACE, "Archivo");
-        assert_eq!(AppFonts::DISPLAY, "Archivo Expanded");
+        assert_eq!(AppFonts::INTERFACE, "Inter");
+        assert_eq!(AppFonts::DISPLAY, AppFonts::INTERFACE);
         assert_eq!(AppFonts::MONO, "JetBrains Mono");
         assert_eq!(AppFonts::MONO_FALLBACK, "monospace");
     }
@@ -155,15 +132,10 @@ mod tests {
         assert_eq!(
             assets,
             vec![
-                (AppFonts::INTERFACE, "Archivo-Regular.ttf"),
-                (AppFonts::INTERFACE, "Archivo-Italic.ttf"),
-                (AppFonts::INTERFACE, "Archivo-Medium.ttf"),
-                (AppFonts::INTERFACE, "Archivo-SemiBold.ttf"),
-                (AppFonts::INTERFACE, "Archivo-Bold.ttf"),
-                (AppFonts::INTERFACE, "Archivo-ExtraBold.ttf"),
-                (AppFonts::DISPLAY, "ArchivoExpanded-Bold.ttf"),
-                (AppFonts::DISPLAY, "ArchivoExpanded-ExtraBold.ttf"),
-                (AppFonts::DISPLAY, "ArchivoExpanded-Black.ttf"),
+                (AppFonts::INTERFACE, "Inter-Regular.ttf"),
+                (AppFonts::INTERFACE, "Inter-Medium.ttf"),
+                (AppFonts::INTERFACE, "Inter-SemiBold.ttf"),
+                (AppFonts::INTERFACE, "Inter-Bold.ttf"),
                 (AppFonts::MONO, "JetBrainsMono-Regular.ttf"),
                 (AppFonts::MONO, "JetBrainsMono-Italic.ttf"),
                 (AppFonts::MONO, "JetBrainsMono-Medium.ttf"),

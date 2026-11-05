@@ -9,7 +9,6 @@ use crate::tokens::{ChromeColors, FontSizes};
 use crate::typography::AppFonts;
 
 /// Tracking of the uppercase `Label` role, in em.
-const LABEL_TRACKING_EM: f32 = 0.14;
 
 /// The eight text roles of the design system.
 ///
@@ -275,16 +274,15 @@ impl TextVariant {
 
     /// The `Label` role renders its text in capitals, so call sites pass
     /// ordinary text.
+    /// Section labels read in sentence case, as IDE tool windows do; no role
+    /// changes the case of its text.
     pub fn is_uppercase(self) -> bool {
-        matches!(self, Self::Label)
+        false
     }
 
     /// Extra space after every character, as a fraction of the font size.
     pub fn letter_spacing_em(self) -> f32 {
-        match self {
-            Self::Label => LABEL_TRACKING_EM,
-            _ => 0.0,
-        }
+        0.0
     }
 
     /// The font this role renders with: the role's bundled family resolved
@@ -343,7 +341,7 @@ impl TextVariant {
                 family: AppFonts::DISPLAY,
                 fallbacks: INTERFACE,
                 size: FontSizes::LABEL.into(),
-                weight: FontWeight::EXTRA_BOLD,
+                weight: FontWeight::SEMIBOLD,
                 color: TextDefaultColor::MutedForeground,
             },
             Self::Caption => TextRoleContract {
@@ -438,15 +436,11 @@ mod tests {
     }
 
     #[test]
-    fn display_face_is_reserved_for_the_label_role() {
-        for role in ALL_ROLES {
-            let is_display = role.role_contract().family == AppFonts::DISPLAY;
-            assert_eq!(is_display, role == TextVariant::Label, "{role:?}");
-        }
-
+    fn label_role_uses_the_interface_face_in_semibold() {
         let label = TextVariant::Label.role_contract();
+        assert_eq!(label.family, AppFonts::INTERFACE);
         assert_eq!(label.size, FontSizes::LABEL.into());
-        assert_eq!(label.weight, FontWeight::EXTRA_BOLD);
+        assert_eq!(label.weight, FontWeight::SEMIBOLD);
     }
 
     #[test]
@@ -469,21 +463,15 @@ mod tests {
     }
 
     #[test]
-    fn label_role_uppercases_and_tracks_its_text() {
-        assert!(TextVariant::Label.is_uppercase());
-        assert_eq!(TextVariant::Label.letter_spacing_em(), 0.14);
-
-        for role in ALL_ROLES
-            .into_iter()
-            .filter(|role| *role != TextVariant::Label)
-        {
+    fn no_role_changes_case_or_tracks_its_text() {
+        for role in ALL_ROLES {
             assert!(!role.is_uppercase(), "{role:?}");
             assert_eq!(role.letter_spacing_em(), 0.0, "{role:?}");
         }
 
         assert_eq!(
             Text::label("Connection details").content.as_ref(),
-            "CONNECTION DETAILS"
+            "Connection details"
         );
         assert_eq!(
             Text::body("Connection details").content.as_ref(),

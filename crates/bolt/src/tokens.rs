@@ -94,20 +94,20 @@ impl Radii {
 pub struct ChamferCut;
 
 impl ChamferCut {
-    /// Keycaps, badges, counters (4 px).
-    pub const KEYCAP: Pixels = px(4.0);
-    /// Controls 24–30 px tall: buttons, selects, icon buttons (6 px).
-    pub const CONTROL: Pixels = px(6.0);
-    /// Inputs, document tabs (top-left only), segmented controls (8 px).
-    pub const INPUT: Pixels = px(8.0);
-    /// Large 44 px buttons (10 px).
-    pub const LARGE_CONTROL: Pixels = px(10.0);
-    /// Menus, popovers, toasts, overlays (12 px).
-    pub const OVERLAY: Pixels = px(12.0);
-    /// Cards (14 px).
-    pub const CARD: Pixels = px(14.0);
-    /// Modals and hero frames (18 px).
-    pub const MODAL: Pixels = px(18.0);
+    /// Keycaps, badges, counters (3 px).
+    pub const KEYCAP: Pixels = px(3.0);
+    /// Controls 24–30 px tall: buttons, selects, icon buttons (5 px).
+    pub const CONTROL: Pixels = px(5.0);
+    /// Inputs, document tabs (top-left only), segmented controls (6 px).
+    pub const INPUT: Pixels = px(6.0);
+    /// Large 44 px buttons (7 px).
+    pub const LARGE_CONTROL: Pixels = px(7.0);
+    /// Menus, popovers, toasts, overlays (8 px).
+    pub const OVERLAY: Pixels = px(8.0);
+    /// Cards (10 px).
+    pub const CARD: Pixels = px(10.0);
+    /// Modals and hero frames (12 px).
+    pub const MODAL: Pixels = px(12.0);
 }
 
 /// Geometry of `modals::Modal`, taken from the modals design board.
@@ -662,33 +662,35 @@ pub struct SyntaxColors {
 impl SyntaxColors {
     pub fn dark() -> Self {
         Self {
-            keyword: rgb(0x8E8996).into(),
-            string: rgb(0x7BE0A0).into(),
-            number: rgb(0xB79CFF).into(),
-            comment: rgb(0x8E8996).into(),
-            type_name: rgb(0x6EA8FF).into(),
-            function: rgb(0xFFC23D).into(),
-            operator: rgb(0xC6C3CC).into(),
-            plain: rgb(0xF7F4F7).into(),
-            namespace: rgb(0xE5A86E).into(),
-            field: rgb(0x5CCFC9).into(),
-            property: rgb(0xA9A4B2).into(),
+            // The usual dark IDE scheme: orange keywords, green strings, teal
+            // numbers, grey comments, blue functions, purple database objects
+            keyword: rgb(0xCF8E6D).into(),
+            string: rgb(0x6AAB73).into(),
+            number: rgb(0x2AACB8).into(),
+            comment: rgb(0x7A7E85).into(),
+            type_name: rgb(0xCF8E6D).into(),
+            function: rgb(0x56A8F5).into(),
+            operator: rgb(0xBCBEC4).into(),
+            plain: rgb(0xBCBEC4).into(),
+            namespace: rgb(0xC77DBB).into(),
+            field: rgb(0xC77DBB).into(),
+            property: rgb(0xC77DBB).into(),
         }
     }
 
     pub fn light() -> Self {
         Self {
-            keyword: rgb(0x6B6572).into(),
-            string: rgb(0x1C7F45).into(),
-            number: rgb(0x6B4FD8).into(),
-            comment: rgb(0x6B6572).into(),
-            type_name: rgb(0x1F5FD1).into(),
-            function: rgb(0xB7791F).into(),
-            operator: rgb(0x3B3740).into(),
-            plain: rgb(0x141118).into(),
-            namespace: rgb(0x9A5418).into(),
-            field: rgb(0x0B7A80).into(),
-            property: rgb(0x5C5766).into(),
+            keyword: rgb(0x0033B3).into(),
+            string: rgb(0x067D17).into(),
+            number: rgb(0x1750EB).into(),
+            comment: rgb(0x8C8C8C).into(),
+            type_name: rgb(0x0033B3).into(),
+            function: rgb(0x00627A).into(),
+            operator: rgb(0x080808).into(),
+            plain: rgb(0x080808).into(),
+            namespace: rgb(0x871094).into(),
+            field: rgb(0x871094).into(),
+            property: rgb(0x871094).into(),
         }
     }
 
@@ -702,19 +704,13 @@ impl SyntaxColors {
             crate::palette::PaletteMode::Dark | crate::palette::PaletteMode::System => Self::dark(),
         };
 
-        colors.with_keyword(Self::keyword_for_current(cx))
+        colors
     }
 
-    /// The accent role a keyword takes: the accent tint on dark, the accent on light.
+    /// The colour keywords take: the palette's own keyword colour, kept apart from
+    /// the accent so SQL reads like it does in other IDEs.
     pub fn keyword_for_current(cx: &gpui::App) -> Hsla {
-        let brand = crate::brand::brand(cx);
-
-        match crate::palette::resolved_mode(cx) {
-            crate::palette::PaletteMode::Light => brand.accent,
-            crate::palette::PaletteMode::Dark | crate::palette::PaletteMode::System => {
-                brand.accent_tint
-            }
-        }
+        Self::for_current(cx).keyword
     }
 
     /// These roles with `keyword` replaced by the product accent.
@@ -1927,11 +1923,11 @@ impl NotificationMetrics {
 pub struct IslandMetrics;
 
 impl IslandMetrics {
-    /// Cut of the top-left and bottom-right corners of every island. (14 px)
+    /// Corner radius of every island. (10 px)
     pub const CUT: Pixels = ChamferCut::CARD;
     /// Space between neighbouring islands and between an island and the
-    /// window's side edges. (8 px)
-    pub const GAP: Pixels = px(8.0);
+    /// window's side edges. (6 px)
+    pub const GAP: Pixels = px(6.0);
     /// Thickness of the hairline along the island outline; zero draws none.
     pub const EDGE: Pixels = px(1.0);
 

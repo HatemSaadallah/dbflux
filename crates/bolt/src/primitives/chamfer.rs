@@ -26,6 +26,23 @@ pub enum ChamferCorners {
     BottomRight,
 }
 
+/// How the corners named by [`ChamferCorners`] are shaped.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum CornerStyle {
+    /// A straight 45° cut, `cut` deep along each side.
+    Cut,
+    /// A quarter circle of radius `cut`.
+    Round,
+}
+
+/// The app draws rounded corners. The geometry tests in this module were written
+/// against the cut shape and keep exercising it; the rounded shape has its own.
+const CORNER_STYLE: CornerStyle = if cfg!(test) {
+    CornerStyle::Cut
+} else {
+    CornerStyle::Round
+};
+
 /// A straight edge painted along the top, bottom or left side of the shape, inside
 /// its bounds and following the shape outline where the side meets a cut.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -274,6 +291,13 @@ pub fn chamfer_outside_polygons(
         return Vec::new();
     }
 
+    if CORNER_STYLE == CornerStyle::Round {
+        return rounded_outside_polygons((left, top, right, bottom), cut, corners)
+            .iter()
+            .map(|polygon| to_pixel_points(polygon))
+            .collect();
+    }
+
     let top_left = vec![
         point(left, top),
         point(left + cut, top),
@@ -324,10 +348,11 @@ pub fn chamfer_ring_points(
     );
 
     let cut = f32::from(clamp_cut(bounds.size, cut));
-    let moved_cut = if cut > 0.0 {
-        (cut + distance * (2.0 - std::f32::consts::SQRT_2)).max(0.0)
-    } else {
-        0.0
+    let moved_cut = match (cut > 0.0, CORNER_STYLE) {
+        (false, _) => 0.0,
+        // A rounded outline moved outward keeps the same centre for each arc
+        (true, CornerStyle::Round) => (cut + distance).max(0.0),
+        (true, CornerStyle::Cut) => (cut + distance * (2.0 - std::f32::consts::SQRT_2)).max(0.0),
     };
 
     chamfer_points(moved_bounds, px(moved_cut), corners)
@@ -922,6 +947,15 @@ fn band_polygon(
 }
 
 fn shape_polygon(bounds: Bounds<Pixels>, cut: Pixels, corners: ChamferCorners) -> Vec<Point<f32>> {
+    shape_polygon_with(bounds, cut, corners, CORNER_STYLE)
+}
+
+fn shape_polygon_with(
+    bounds: Bounds<Pixels>,
+    cut: Pixels,
+    corners: ChamferCorners,
+    style: CornerStyle,
+) -> Vec<Point<f32>> {
     let (left, top, right, bottom) = edges_of(bounds);
 
     if right <= left || bottom <= top {
@@ -929,6 +963,10 @@ fn shape_polygon(bounds: Bounds<Pixels>, cut: Pixels, corners: ChamferCorners) -
     }
 
     let cut = f32::from(clamp_cut(bounds.size, cut));
+
+    if style == CornerStyle::Round {
+        return rounded_outline((left, top, right, bottom), cut, corners);
+    }
 
     let outline = match corners {
         ChamferCorners::TopLeftBottomRight => vec![
@@ -1012,6 +1050,71 @@ fn at_x(a: Point<f32>, b: Point<f32>, x: f32) -> Point<f32> {
 fn at_y(a: Point<f32>, b: Point<f32>, y: f32) -> Point<f32> {
     let ratio = (y - a.y) / (b.y - a.y);
     point(a.x + (b.x - a.x) * ratio, y)
+}
+
+/// Which corners are rounded, in the order top-left, top-right, bottom-right,
+/// bottom-left. A shape whose cut sits on one corner rounds that whole side, so a
+/// tab or a split-button segment still reads as one end of a rounded pair.
+fn rounded_corners(corners: ChamferCorners) -> [bool; 4] {
+    match corners {
+        ChamferCorners::TopLeftBottomRight => [true, true, true, true],
+        ChamferCorners::TopLeft => [true, false, false, true],
+        ChamferCorners::BottomRight => [false, true, true, false],
+    }
+}
+
+/// Points along a quarter circle, `start_degrees` to `start_degrees + 90` in
+/// screen coordinates (y grows downward). A zero radius gives the corner itself.
+fn quarter_arc(center: Point<f32>, radius: f32, start_degrees: f32) -> Vec<Point<f32>> {
+    if radius <= 0.0 {
+        return vec![center];
+    }
+    // About one segment per 1.5 px of radius looks smooth at every size used
+    let steps = ((radius / 1.5).ceil() as usize).clamp(2, 12);
+    (0..=steps)
+        .map(|step| {
+            let angle = (start_degrees + 90.0 * step as f32 / steps as f32).to_radians();
+            point(center.x + radius * angle.cos(), center.y + radius * angle.sin())
+        })
+        .collect()
+}
+
+/// The four corner arcs in clockwise order: top-right, bottom-right, bottom-left,
+/// top-left. Each is the arc with its centre and start angle.
+fn corner_arcs(edges: Band, radius: f32, corners: ChamferCorners) -> [(Point<f32>, f32, f32); 4] {
+    let (left, top, right, bottom) = edges;
+    let [top_left, top_right, bottom_right, bottom_left] = rounded_corners(corners);
+    let r = |rounded: bool| if rounded { radius } else { 0.0 };
+    [
+        (point(right - r(top_right), top + r(top_right)), r(top_right), -90.0),
+        (point(right - r(bottom_right), bottom - r(bottom_right)), r(bottom_right), 0.0),
+        (point(left + r(bottom_left), bottom - r(bottom_left)), r(bottom_left), 90.0),
+        (point(left + r(top_left), top + r(top_left)), r(top_left), 180.0),
+    ]
+}
+
+fn rounded_outline(edges: Band, radius: f32, corners: ChamferCorners) -> Vec<Point<f32>> {
+    let outline = corner_arcs(edges, radius, corners)
+        .into_iter()
+        .flat_map(|(center, radius, start)| quarter_arc(center, radius, start))
+        .collect();
+    without_repeated_vertices(outline)
+}
+
+/// The parts of the bounds outside each rounded corner: the corner point plus its arc.
+fn rounded_outside_polygons(edges: Band, radius: f32, corners: ChamferCorners) -> Vec<Vec<Point<f32>>> {
+    let (left, top, right, bottom) = edges;
+    let corner_points = [point(right, top), point(right, bottom), point(left, bottom), point(left, top)];
+    corner_arcs(edges, radius, corners)
+        .into_iter()
+        .zip(corner_points)
+        .filter(|((_, radius, _), _)| *radius > 0.0)
+        .map(|((center, radius, start), corner)| {
+            let mut polygon = vec![corner];
+            polygon.extend(quarter_arc(center, radius, start));
+            polygon
+        })
+        .collect()
 }
 
 fn without_repeated_vertices(points: Vec<Point<f32>>) -> Vec<Point<f32>> {
@@ -1805,5 +1908,60 @@ mod tests {
             renders(&host, window) > after_press,
             "releasing must repaint it"
         );
+    }
+
+    #[test]
+    fn rounded_outline_stays_inside_the_bounds_and_reaches_every_side() {
+        let bounds = rect(10.0, 20.0, 100.0, 30.0);
+        let shape = shape_polygon_with(bounds, px(6.0), ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+
+        assert!(shape.iter().all(|p| p.x >= 9.999 && p.x <= 110.001 && p.y >= 19.999 && p.y <= 50.001));
+        assert!(shape.iter().any(|p| (p.y - 20.0).abs() < 0.001), "touches the top");
+        assert!(shape.iter().any(|p| (p.y - 50.0).abs() < 0.001), "touches the bottom");
+        assert!(shape.iter().any(|p| (p.x - 10.0).abs() < 0.001), "touches the left");
+        assert!(shape.iter().any(|p| (p.x - 110.0).abs() < 0.001), "touches the right");
+        assert!(!shape.iter().any(|p| p.x == 10.0 && p.y == 20.0), "the top-left corner is rounded off");
+    }
+
+    #[test]
+    fn rounded_corner_points_lie_on_the_circle() {
+        let bounds = rect(0.0, 0.0, 40.0, 40.0);
+        let shape = shape_polygon_with(bounds, px(8.0), ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+
+        for p in shape.iter().filter(|p| p.x < 8.0 && p.y < 8.0) {
+            let distance = ((p.x - 8.0).powi(2) + (p.y - 8.0).powi(2)).sqrt();
+            assert!((distance - 8.0).abs() < 0.01, "point {p:?} is {distance} from the centre");
+        }
+    }
+
+    #[test]
+    fn one_sided_shapes_round_only_their_side() {
+        let bounds = rect(0.0, 0.0, 60.0, 20.0);
+        let tab = shape_polygon_with(bounds, px(6.0), ChamferCorners::TopLeft, CornerStyle::Round);
+        let segment = shape_polygon_with(bounds, px(6.0), ChamferCorners::BottomRight, CornerStyle::Round);
+
+        assert!(tab.contains(&point(60.0, 0.0)) && tab.contains(&point(60.0, 20.0)), "right side stays square");
+        assert!(!tab.contains(&point(0.0, 0.0)) && !tab.contains(&point(0.0, 20.0)), "left side is rounded");
+        assert!(segment.contains(&point(0.0, 0.0)) && segment.contains(&point(0.0, 20.0)), "left side stays square");
+        assert!(!segment.contains(&point(60.0, 0.0)), "right side is rounded");
+    }
+
+    #[test]
+    fn rounded_outside_polygons_cover_each_rounded_corner() {
+        let all = rounded_outside_polygons((0.0, 0.0, 50.0, 30.0), 5.0, ChamferCorners::TopLeftBottomRight);
+        let tab = rounded_outside_polygons((0.0, 0.0, 50.0, 30.0), 5.0, ChamferCorners::TopLeft);
+
+        assert_eq!(all.len(), 4);
+        assert_eq!(tab.len(), 2);
+        assert!(all.iter().any(|polygon| polygon.first() == Some(&point(0.0, 0.0))));
+        assert!(all.iter().all(|polygon| polygon.len() >= 4));
+    }
+
+    #[test]
+    fn zero_radius_rounded_shape_is_the_plain_rectangle() {
+        let bounds = rect(0.0, 0.0, 30.0, 10.0);
+        let shape = shape_polygon_with(bounds, Pixels::ZERO, ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+
+        assert_eq!(shape.len(), 4);
     }
 }
