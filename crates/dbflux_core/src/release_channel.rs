@@ -41,16 +41,16 @@ impl ReleaseChannel {
     /// instead of sharing its taskbar entry and icon association.
     pub fn app_id(self) -> &'static str {
         match self {
-            Self::Nightly => "dbflux-nightly",
-            Self::Stable | Self::Rc => "dbflux",
+            Self::Nightly => "basalt-nightly",
+            Self::Stable | Self::Rc => "basalt",
         }
     }
 
     /// Human-facing application name used for window titles and bundle metadata.
     pub fn display_name(self) -> &'static str {
         match self {
-            Self::Nightly => "DBFlux Nightly",
-            Self::Stable | Self::Rc => "DBFlux",
+            Self::Nightly => "Basalt Nightly",
+            Self::Stable | Self::Rc => "Basalt",
         }
     }
 
@@ -61,8 +61,8 @@ impl ReleaseChannel {
     /// both channels side by side.
     pub fn db_file_name(self) -> &'static str {
         match self {
-            Self::Nightly => "dbflux-nightly.db",
-            Self::Stable | Self::Rc => "dbflux.db",
+            Self::Nightly => "basalt-nightly.db",
+            Self::Stable | Self::Rc => "basalt.db",
         }
     }
 }
@@ -75,7 +75,7 @@ impl ReleaseChannel {
 /// building, so every driver reports the app's version rather than the
 /// version of the crate that happens to compile the call.
 pub fn client_identity() -> &'static str {
-    concat!("dbflux/", env!("CARGO_PKG_VERSION"))
+    concat!("basalt/", env!("CARGO_PKG_VERSION"))
 }
 
 /// Client identity in the charset the AWS SDK's `AppName` accepts.
@@ -97,8 +97,8 @@ mod tests {
     #[test]
     fn client_identity_carries_app_prefix_and_version() {
         let identity = client_identity();
-        assert!(identity.starts_with("dbflux/"));
-        assert_eq!(&identity["dbflux/".len()..], env!("CARGO_PKG_VERSION"));
+        assert!(identity.starts_with("basalt/"));
+        assert_eq!(&identity["basalt/".len()..], env!("CARGO_PKG_VERSION"));
     }
 
     #[test]
@@ -116,7 +116,7 @@ mod tests {
     fn client_identity_token_replaces_slash_with_dash() {
         assert_eq!(
             client_identity_token(),
-            format!("dbflux-{}", env!("CARGO_PKG_VERSION"))
+            format!("basalt-{}", env!("CARGO_PKG_VERSION"))
         );
     }
 

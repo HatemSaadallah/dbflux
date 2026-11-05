@@ -1019,7 +1019,7 @@ mod tests {
 
         assert_eq!(
             degraded_en,
-            "Audit is paused because its database could not be opened. Restart DBFlux."
+            "Audit is paused because its database could not be opened. Restart Basalt."
         );
         assert_eq!(enabled_en, "Audit is enabled");
         assert_eq!(disabled_en, "Audit is disabled");
@@ -1102,8 +1102,8 @@ mod tests {
             let label = dbflux_i18n::t!("settings.audit.status.degraded", locale = locale);
 
             assert!(
-                label.contains("DBFlux"),
-                "degraded label for {locale} does not name DBFlux: {label}"
+                label.contains("Basalt"),
+                "degraded label for {locale} does not name Basalt: {label}"
             );
 
             if locale != "en" {

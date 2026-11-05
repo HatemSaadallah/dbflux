@@ -6,7 +6,7 @@
 #define MyAppName GetEnv("DBFLUX_APP_NAME")
 #if MyAppName == ""
 #undef MyAppName
-#define MyAppName "DBFlux"
+#define MyAppName "Basalt"
 #endif
 #endif
 #ifndef MyAppId
@@ -24,8 +24,8 @@
 #endif
 #endif
 #define MyAppPublisher "Ignacio Perez"
-#define MyAppURL "https://github.com/0xErwin1/dbflux"
-#define MyAppExeName "dbflux.exe"
+#define MyAppURL "https://github.com/HatemSaadallah/dbflux"
+#define MyAppExeName "basalt.exe"
 
 [Setup]
 AppId={#MyAppId}
@@ -39,7 +39,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE-MIT
 OutputDir=output
-OutputBaseFilename=dbflux-windows-amd64-setup
+OutputBaseFilename=basalt-windows-amd64-setup
 SetupIconFile=dbflux.ico
 Compression=lzma2
 SolidCompression=yes
@@ -59,7 +59,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dbflux.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "basalt.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dbflux.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE-MIT"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion

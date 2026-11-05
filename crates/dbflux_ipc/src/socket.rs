@@ -10,7 +10,7 @@ use std::io;
 /// - Windows: named pipe
 pub fn socket_name() -> io::Result<Name<'static>> {
     let suffix = if cfg!(debug_assertions) { "-debug" } else { "" };
-    format!("dbflux{suffix}.sock").to_ns_name::<GenericNamespaced>()
+    format!("basalt{suffix}.sock").to_ns_name::<GenericNamespaced>()
 }
 
 /// Returns the local socket name for an IPC driver-host process.
@@ -18,15 +18,15 @@ pub fn socket_name() -> io::Result<Name<'static>> {
 /// Each driver-host gets a unique socket name based on its identifier.
 pub fn driver_socket_name(id: &str) -> io::Result<Name<'static>> {
     let suffix = if cfg!(debug_assertions) { "-debug" } else { "" };
-    format!("dbflux-driver-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
+    format!("basalt-driver-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
 }
 
 pub fn auth_provider_socket_name(id: &str) -> io::Result<Name<'static>> {
     let suffix = if cfg!(debug_assertions) { "-debug" } else { "" };
-    format!("dbflux-auth-provider-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
+    format!("basalt-auth-provider-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
 }
 
 pub fn secret_provider_socket_name(id: &str) -> io::Result<Name<'static>> {
     let suffix = if cfg!(debug_assertions) { "-debug" } else { "" };
-    format!("dbflux-secret-provider-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
+    format!("basalt-secret-provider-{id}{suffix}.sock").to_ns_name::<GenericNamespaced>()
 }

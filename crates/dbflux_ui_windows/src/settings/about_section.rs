@@ -157,11 +157,14 @@ impl Render for AboutSection {
                                             .flex()
                                             .flex_col()
                                             .gap_1()
-                                            .child(Text::heading("DBFlux"))
+                                            .child(Text::heading("Basalt"))
                                             .child(
                                                 Text::code(format!("{} ({})", VERSION, PROFILE))
                                                     .muted_foreground(),
-                                            ),
+                                            )
+                                            .child(Text::caption(dbflux_i18n::t!(
+                                                "settings.about.based_on"
+                                            ))),
                                     ),
                             )
                             .child(

@@ -305,7 +305,7 @@ impl ScriptsDirectory {
             DbError::IoError(std::io::Error::other("Could not find data directory"))
         })?;
 
-        Self::new_at(data_dir.join("dbflux").join("scripts"))
+        Self::new_at(data_dir.join("basalt").join("scripts"))
     }
 
     /// Opens the scripts directory with its managed root at `root`, creating

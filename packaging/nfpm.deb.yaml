@@ -5,10 +5,10 @@ version: ${VERSION}
 release: 1
 section: utility
 priority: optional
-maintainer: Ignacio Perez
+maintainer: Hatem Saadallah
 description: |
   A fast, keyboard-first database client for SQL and NoSQL databases.
-homepage: https://github.com/0xErwin1/dbflux
+homepage: https://github.com/HatemSaadallah/dbflux
 license: MIT
 depends:
   - libc6
@@ -24,7 +24,7 @@ recommends:
   - hicolor-icon-theme
   - xdg-utils
 contents:
-  - src: target/${TARGET}/release/dbflux
+  - src: target/${TARGET}/release/basalt
     dst: /usr/bin/${APP_ID}
   - src: packaging/dbflux.desktop
     dst: /usr/share/applications/${APP_ID}.desktop

@@ -100,13 +100,13 @@ impl ChannelIdentity {
             }
         } else if version.contains("-rc") {
             Self {
-                product_name: "DBFlux",
+                product_name: "Basalt",
                 icon_file: "dbflux.ico",
                 prerelease: true,
             }
         } else {
             Self {
-                product_name: "DBFlux",
+                product_name: "Basalt",
                 icon_file: "dbflux.ico",
                 prerelease: false,
             }

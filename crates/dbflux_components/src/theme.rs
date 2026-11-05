@@ -31,7 +31,7 @@ const ON_ACCENT: u32 = 0xFFFFFF;
 /// The DBFlux brand: the byzantine accent of the Bolt Byzantium palette.
 pub fn brand() -> Brand {
     Brand {
-        name: "DBFlux".into(),
+        name: "Basalt".into(),
         accent: rgb_to_hsla(ACCENT),
         accent_hover: rgb_to_hsla(ACCENT_HOVER),
         accent_pressed: rgb_to_hsla(ACCENT_PRESSED),

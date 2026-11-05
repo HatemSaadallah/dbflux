@@ -1,10 +1,14 @@
-# DBFlux
+# Basalt
 
-**English** · [Español](docs/es/README.md) · [한국어](docs/ko/README.md) · [简体中文](docs/zh_Hans/README.md) · [Português (Brasil)](docs/pt_BR/README.md)
+A free, open-source database IDE written in Rust, in the style of a JetBrains IDE: a Database
+Explorer, query consoles with results below, a table editor, the familiar key bindings, and a
+dark IDE theme. Native and GPU-drawn with GPUI, so it starts instantly and stays light.
 
-An extensible, keyboard-first data platform delivered as a Rust + GPUI desktop client.
+Basalt is a fork of [DBFlux](https://github.com/0xErwin1/dbflux) by Ignacio Perez, under the same
+MIT OR Apache-2.0 licence. It is not an official DBFlux build. The documentation below is
+DBFlux's and still describes it under that name.
 
-**[dbflux.dev](https://dbflux.dev)** &middot; [Documentation](https://docs.dbflux.dev/) &middot; [Install](https://docs.dbflux.dev/install/)
+![Basalt](resources/dbflux.png)
 
 ## Overview
 
@@ -12,7 +16,6 @@ DBFlux is an open-source desktop client with built-in drivers for relational and
 
 The client focuses on performance, a clean UX, and keyboard-first workflows. The long-term goal is one fully open-source client for every database you work with.
 
-![DBFlux](resources/dbflux.png)
 
 ## Documentation
 
