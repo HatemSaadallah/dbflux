@@ -4283,6 +4283,7 @@ settings:
     command:
       toggle_command_palette: 명령 팔레트 전환
       new_query_tab: 새 쿼리 탭
+      go_to_table: 테이블로 이동
       close_tab: 현재 탭 닫기
       next_tab: 다음 탭
       prev_tab: 이전 탭

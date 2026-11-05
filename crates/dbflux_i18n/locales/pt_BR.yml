@@ -4283,6 +4283,7 @@ settings:
     command:
       toggle_command_palette: Alternar paleta de comandos
       new_query_tab: Nova aba de consulta
+      go_to_table: Ir para a tabela
       close_tab: Fechar aba
       next_tab: Próxima aba
       prev_tab: Aba anterior

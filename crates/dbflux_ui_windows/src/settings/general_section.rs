@@ -1545,7 +1545,7 @@ mod tests {
             &installed(&["Inter"]),
         );
 
-        assert_eq!(options[0].label.as_ref(), "Default (Archivo)");
+        assert_eq!(options[0].label.as_ref(), "Default (Inter)");
         assert_eq!(
             options[1],
             FontFamilyOption {

@@ -67,12 +67,12 @@ chart:
   engine:
     no_data: No data
   point_inspector:
-    series: SERIES
-    hovered_point: HOVERED POINT
+    series: Series
+    hovered_point: Hovered point
     time: Time
     value: Value
-    source_row: SOURCE ROW
-    quick_actions: QUICK ACTIONS
+    source_row: Source row
+    quick_actions: Quick actions
     show_in_tree: Show in tree
 common:
   time_range:
@@ -443,9 +443,9 @@ connection_manager:
     client_cert: Client cert
     client_key: Client key
   section:
-    transport: TRANSPORT
-    navigator: "NAVIGATOR"
-    safety: "SAFETY"
+    transport: Transport
+    navigator: "Navigator"
+    safety: "Safety"
   banner:
     correct_following: Please correct the following
     testing_connection: "Testing connection…"
@@ -1185,7 +1185,7 @@ document:
       period: "Period…"
       statistic: "Statistic…"
     toolbar:
-      type_label: TYPE
+      type_label: Type
       stats: Stats
       save_chart: Save chart
       points:
@@ -1247,7 +1247,7 @@ document:
         validation:
           empty: statistic must not be empty
       dimensions:
-        title: DIMENSIONS
+        title: Dimensions
         loading: "Loading dimensions…"
         error: "Error: %{message}"
         retry: Retry
@@ -3218,12 +3218,12 @@ document:
       having: "HAVING"
       limit_offset: "LIMIT & OFFSET"
       set: "SET"
-      columns: COLUMNS
-      execution: EXECUTION
-      filters: FILTERS
-      filters_where: FILTERS (WHERE)
-      sort_limit: "SORT AND LIMIT"
-      sql_preview: SQL PREVIEW
+      columns: Columns
+      execution: Execution
+      filters: Filters
+      filters_where: Filters (WHERE)
+      sort_limit: "Sort and limit"
+      sql_preview: SQL preview
     sort:
       direction:
         asc: ASC
@@ -3337,8 +3337,8 @@ document:
         indexes:
           one: "%{count} index"
           many: "%{count} indexes"
-      foreign_keys: FOREIGN KEYS
-      indexes: INDEXES
+      foreign_keys: Foreign keys
+      indexes: Indexes
       referenced_by: "Referenced by"
       summary_full: "%{columns} · %{indexes} · %{foreign_keys} · referenced by %{referenced_by}"
     layout:
@@ -4283,6 +4283,7 @@ settings:
     command:
       toggle_command_palette: Toggle command palette
       new_query_tab: New query tab
+      go_to_table: Go to table
       close_tab: Close tab
       next_tab: Next tab
       prev_tab: Previous tab

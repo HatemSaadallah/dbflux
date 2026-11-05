@@ -1023,7 +1023,7 @@ mod tests {
         let en = dbflux_i18n::t!("document.query_builder.section.columns", locale = "en");
         let es = dbflux_i18n::t!("document.query_builder.section.columns", locale = "es");
 
-        assert_eq!(en, "COLUMNS");
+        assert_eq!(en, "Columns");
         assert_eq!(es, "COLUMNAS");
         assert_ne!(en, es);
     }

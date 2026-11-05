@@ -820,10 +820,16 @@ fn s_in_the_picker_list_does_not_save_a_query(cx: &mut TestAppContext) {
     assert_eq!(applied, vec![0, 1, 2, 3]);
 
     // `s` stops in the list. Ctrl+N reaches the workspace, as it does from
-    // every pane, where it opens a query tab; the document takes no part.
+    // every pane, where it runs DataGrip's Go to table (a new query tab on
+    // macOS); the document takes no part.
     let commands = window.update(|_, cx| host.read(cx).commands.clone());
+    let workspace_command = if cfg!(target_os = "macos") {
+        Command::NewQueryTab
+    } else {
+        Command::GoToTable
+    };
     assert!(!commands.contains(&Command::SaveQuery), "{commands:?}");
-    assert!(commands.contains(&Command::NewQueryTab), "{commands:?}");
+    assert!(commands.contains(&workspace_command), "{commands:?}");
 
     // The rows of the Columns view stop `s` the same way.
     window.simulate_keystrokes("escape t");

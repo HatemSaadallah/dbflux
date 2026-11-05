@@ -6304,7 +6304,7 @@ mod tests {
     fn chart_toolbar_type_label_matches_english_catalog() {
         assert_eq!(
             dbflux_i18n::t!("document.chart.toolbar.type_label", locale = "en"),
-            "TYPE"
+            "Type"
         );
     }
 
@@ -6477,8 +6477,7 @@ mod tests {
     }
 
     /// PR 25: `document.chart.metric_picker.dimensions.title` matches the
-    /// pre-i18n "DIMENSIONS" literal in English (an uppercase section
-    /// label, same convention as `document.chart.toolbar.type_label`).
+    /// English section label, in sentence case like every section label.
     #[test]
     fn metric_picker_dimensions_title_matches_english_catalog() {
         assert_eq!(
@@ -6486,7 +6485,7 @@ mod tests {
                 "document.chart.metric_picker.dimensions.title",
                 locale = "en"
             ),
-            "DIMENSIONS"
+            "Dimensions"
         );
     }
 
