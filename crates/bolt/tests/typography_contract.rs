@@ -5,8 +5,8 @@ const FONT_DIRECTORY: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/fonts"
 
 #[test]
 fn app_fonts_define_shared_family_contract() {
-    assert_eq!(AppFonts::INTERFACE, "Archivo");
-    assert_eq!(AppFonts::DISPLAY, "Archivo Expanded");
+    assert_eq!(AppFonts::INTERFACE, "Inter");
+    assert_eq!(AppFonts::DISPLAY, AppFonts::INTERFACE);
     assert_eq!(AppFonts::MONO, "JetBrains Mono");
     assert_eq!(AppFonts::MONO_FALLBACK, "monospace");
 }
@@ -16,15 +16,10 @@ fn bundled_font_data_registers_all_shared_font_assets() {
     let bundled_fonts = bundled_font_data();
 
     let expected_assets = [
-        (AppFonts::INTERFACE, "Archivo-Regular.ttf"),
-        (AppFonts::INTERFACE, "Archivo-Italic.ttf"),
-        (AppFonts::INTERFACE, "Archivo-Medium.ttf"),
-        (AppFonts::INTERFACE, "Archivo-SemiBold.ttf"),
-        (AppFonts::INTERFACE, "Archivo-Bold.ttf"),
-        (AppFonts::INTERFACE, "Archivo-ExtraBold.ttf"),
-        (AppFonts::DISPLAY, "ArchivoExpanded-Bold.ttf"),
-        (AppFonts::DISPLAY, "ArchivoExpanded-ExtraBold.ttf"),
-        (AppFonts::DISPLAY, "ArchivoExpanded-Black.ttf"),
+        (AppFonts::INTERFACE, "Inter-Regular.ttf"),
+        (AppFonts::INTERFACE, "Inter-Medium.ttf"),
+        (AppFonts::INTERFACE, "Inter-SemiBold.ttf"),
+        (AppFonts::INTERFACE, "Inter-Bold.ttf"),
         (AppFonts::MONO, "JetBrainsMono-Regular.ttf"),
         (AppFonts::MONO, "JetBrainsMono-Italic.ttf"),
         (AppFonts::MONO, "JetBrainsMono-Medium.ttf"),
@@ -78,7 +73,7 @@ fn every_bundled_font_file_exists_on_disk() {
 #[test]
 fn bundled_font_families_ship_their_licenses() {
     let licenses = [
-        ("Archivo-OFL.txt", "The Archivo Project Authors"),
+        ("Inter-OFL.txt", "The Inter Project Authors"),
         (
             "JetBrainsMono-OFL.txt",
             "The JetBrains Mono Project Authors",

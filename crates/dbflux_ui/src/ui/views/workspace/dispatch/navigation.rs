@@ -55,13 +55,13 @@ impl Workspace {
                 Some(true)
             }
             Command::FocusSidebar => {
+                // Alt+1 is DataGrip's Database Explorer: always land on it. A
+                // collapsed sidebar is shown while focused and hides again after,
+                // as before.
                 #[cfg(not(target_os = "macos"))]
-                {
-                    self.sidebar.update(cx, |sidebar, cx| {
-                        sidebar.set_active_tab(SidebarTab::Connections, cx);
-                    });
-                    self.sidebar_dock.update(cx, |dock, cx| dock.expand(cx));
-                }
+                self.sidebar.update(cx, |sidebar, cx| {
+                    sidebar.set_active_tab(SidebarTab::Connections, cx);
+                });
                 self.set_focus(FocusTarget::Sidebar, window, cx);
                 Some(true)
             }

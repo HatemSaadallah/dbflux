@@ -2551,8 +2551,23 @@ mod tests {
         assert_eq!(
             shortcuts,
             vec![
-                Some("\u{21b5}".to_string()),
-                Some("r".to_string()),
+                // DataGrip's F4 and Ctrl+F5 come first off macOS
+                Some(
+                    if cfg!(target_os = "macos") {
+                        "\u{21b5}"
+                    } else {
+                        "F4"
+                    }
+                    .to_string()
+                ),
+                Some(
+                    if cfg!(target_os = "macos") {
+                        "r"
+                    } else {
+                        "Ctrl F5"
+                    }
+                    .to_string()
+                ),
                 Some("x".to_string()),
                 None,
             ]

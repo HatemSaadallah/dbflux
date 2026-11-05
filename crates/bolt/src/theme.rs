@@ -442,7 +442,7 @@ impl Palette {
 
             text_strong: rgb_to_hsla(0xDFE1E5),
             text_body: rgb_to_hsla(0xBCBEC4),
-            text_muted: rgb_to_hsla(0x868A91),
+            text_muted: rgb_to_hsla(0x95989F),
 
             accent: brand.accent,
             accent_hover: brand.accent_hover,
@@ -485,7 +485,7 @@ impl Palette {
 
             text_strong: rgb_to_hsla(0x000000),
             text_body: rgb_to_hsla(0x2B2D30),
-            text_muted: rgb_to_hsla(0x6C707E),
+            text_muted: rgb_to_hsla(0x646875),
 
             accent: brand.accent,
             accent_hover: brand.accent_hover,
@@ -791,14 +791,8 @@ mod tests {
         cx.update(gpui_component::init);
 
         for (mode, colors) in [
-            (
-                PaletteMode::Dark,
-                SyntaxColors::dark(),
-            ),
-            (
-                PaletteMode::Light,
-                SyntaxColors::light(),
-            ),
+            (PaletteMode::Dark, SyntaxColors::dark()),
+            (PaletteMode::Light, SyntaxColors::light()),
         ] {
             cx.update(|cx| {
                 install(test_brand(), mode, Density::Default, cx);
@@ -956,8 +950,8 @@ mod tests {
         cx.update(gpui_component::init);
 
         for (mode, background, line_number) in [
-            (PaletteMode::Dark, 0x1E1F22, 0x868A91),
-            (PaletteMode::Light, 0xFFFFFF, 0x6C707E),
+            (PaletteMode::Dark, 0x1E1F22, 0x95989F),
+            (PaletteMode::Light, 0xFFFFFF, 0x646875),
         ] {
             cx.update(|cx| install(test_brand(), mode, Density::Default, cx));
             cx.update(|cx| {

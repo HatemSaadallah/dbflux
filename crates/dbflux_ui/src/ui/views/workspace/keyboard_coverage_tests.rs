@@ -658,9 +658,9 @@ fn datagrip_tab_shortcuts_preserve_shell_keyboard_coverage() {
     use dbflux_ui_base::keymap::default_keymap;
 
     for (element_id, keys, command) in [
-        ("new-tab-btn", "ctrl-shift-q", Command::NewQueryTab),
-        ("tab-close-*", "ctrl-f4", Command::CloseCurrentTab),
-        ("tab-*", "alt-right", Command::NextTab),
+        ("new-tab-btn", "ctrl+shift+q", Command::NewQueryTab),
+        ("tab-close-*", "ctrl+f4", Command::CloseCurrentTab),
+        ("tab-*", "alt+right", Command::NextTab),
     ] {
         assert!(SHELL.entries.iter().any(|(identifier, path)| {
             *identifier == element_id

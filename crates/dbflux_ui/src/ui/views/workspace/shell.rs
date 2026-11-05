@@ -736,7 +736,12 @@ mod tests {
         let expected = [
             (
                 Command::NewQueryTab,
-                KeyChord::new("n", Modifiers::primary()),
+                // DataGrip's new console chord; macOS keeps Cmd+N
+                if cfg!(target_os = "macos") {
+                    KeyChord::new("n", Modifiers::primary())
+                } else {
+                    KeyChord::new("q", Modifiers::ctrl_shift())
+                },
             ),
             (
                 Command::ToggleCommandPalette,

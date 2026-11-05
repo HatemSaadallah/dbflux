@@ -157,12 +157,22 @@ fn test_sidebar_vim_navigation() {
 fn test_editor_history_bindings() {
     let keymap = default_keymap();
 
-    let alt_h = KeyChord::new("h", Modifiers::alt());
+    // DataGrip opens query history with Ctrl+Alt+E; macOS keeps its own binding
+    #[cfg(not(target_os = "macos"))]
+    let history = KeyChord::new(
+        "e",
+        Modifiers {
+            alt: true,
+            ..Modifiers::ctrl()
+        },
+    );
+    #[cfg(target_os = "macos")]
+    let history = KeyChord::new("h", Modifiers::alt());
     let primary_p = KeyChord::new("p", Modifiers::primary());
     let primary_s = KeyChord::new("s", Modifiers::primary());
 
     assert_eq!(
-        keymap.resolve(ContextId::Editor, &alt_h),
+        keymap.resolve(ContextId::Editor, &history),
         Some(Command::ToggleHistoryDropdown)
     );
     assert_eq!(
@@ -2963,12 +2973,12 @@ fn persisted_identifiers_round_trip_through_their_storage_forms() {
     let slot = BindingSlot::new(
         ContextId::Global,
         Command::NewQueryTab,
-        KeyChord::new("n", Modifiers::ctrl()),
+        KeyChord::new("q", Modifiers::ctrl_shift()),
     );
     let row = KeybindingOverrideDto {
         context: "global".to_string(),
         command_id: "new_query_tab".to_string(),
-        default_keys: "ctrl+n".to_string(),
+        default_keys: "ctrl+shift+q".to_string(),
         keys: Some("ctrl+t".to_string()),
         predicate: None,
     };
@@ -3020,16 +3030,16 @@ fn datagrip_context_defaults_and_existing_editor_shortcuts() {
     let keymap = default_keymap();
     for (context, keys, command) in [
         (ContextId::Sidebar, "f4", Command::Execute),
-        (ContextId::Sidebar, "ctrl-f5", Command::RefreshSchema),
+        (ContextId::Sidebar, "ctrl+f5", Command::RefreshSchema),
         (
             ContextId::Editor,
-            "ctrl-alt-e",
+            "ctrl+alt+e",
             Command::ToggleHistoryDropdown,
         ),
-        (ContextId::Editor, "ctrl-/", Command::ToggleComment),
-        (ContextId::Input, "ctrl-space", Command::TriggerCompletion),
-        (ContextId::Editor, "ctrl-enter", Command::RunQuery),
-        (ContextId::Global, "ctrl-q", Command::Quit),
+        (ContextId::Editor, "ctrl+/", Command::ToggleComment),
+        (ContextId::Input, "ctrl+space", Command::TriggerCompletion),
+        (ContextId::Editor, "ctrl+enter", Command::RunQuery),
+        (ContextId::Global, "ctrl+q", Command::Quit),
     ] {
         let chord = KeyChord::parse(keys).expect("valid chord");
         assert_eq!(keymap.resolve(context, &chord), Some(command), "{keys}");
@@ -3038,7 +3048,7 @@ fn datagrip_context_defaults_and_existing_editor_shortcuts() {
     assert_eq!(
         keymap.resolve(
             ContextId::Global,
-            &KeyChord::parse("ctrl-w").expect("valid chord")
+            &KeyChord::parse("ctrl+w").expect("valid chord")
         ),
         None
     );

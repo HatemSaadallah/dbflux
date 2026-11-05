@@ -1074,7 +1074,10 @@ fn quarter_arc(center: Point<f32>, radius: f32, start_degrees: f32) -> Vec<Point
     (0..=steps)
         .map(|step| {
             let angle = (start_degrees + 90.0 * step as f32 / steps as f32).to_radians();
-            point(center.x + radius * angle.cos(), center.y + radius * angle.sin())
+            point(
+                center.x + radius * angle.cos(),
+                center.y + radius * angle.sin(),
+            )
         })
         .collect()
 }
@@ -1086,10 +1089,26 @@ fn corner_arcs(edges: Band, radius: f32, corners: ChamferCorners) -> [(Point<f32
     let [top_left, top_right, bottom_right, bottom_left] = rounded_corners(corners);
     let r = |rounded: bool| if rounded { radius } else { 0.0 };
     [
-        (point(right - r(top_right), top + r(top_right)), r(top_right), -90.0),
-        (point(right - r(bottom_right), bottom - r(bottom_right)), r(bottom_right), 0.0),
-        (point(left + r(bottom_left), bottom - r(bottom_left)), r(bottom_left), 90.0),
-        (point(left + r(top_left), top + r(top_left)), r(top_left), 180.0),
+        (
+            point(right - r(top_right), top + r(top_right)),
+            r(top_right),
+            -90.0,
+        ),
+        (
+            point(right - r(bottom_right), bottom - r(bottom_right)),
+            r(bottom_right),
+            0.0,
+        ),
+        (
+            point(left + r(bottom_left), bottom - r(bottom_left)),
+            r(bottom_left),
+            90.0,
+        ),
+        (
+            point(left + r(top_left), top + r(top_left)),
+            r(top_left),
+            180.0,
+        ),
     ]
 }
 
@@ -1102,9 +1121,18 @@ fn rounded_outline(edges: Band, radius: f32, corners: ChamferCorners) -> Vec<Poi
 }
 
 /// The parts of the bounds outside each rounded corner: the corner point plus its arc.
-fn rounded_outside_polygons(edges: Band, radius: f32, corners: ChamferCorners) -> Vec<Vec<Point<f32>>> {
+fn rounded_outside_polygons(
+    edges: Band,
+    radius: f32,
+    corners: ChamferCorners,
+) -> Vec<Vec<Point<f32>>> {
     let (left, top, right, bottom) = edges;
-    let corner_points = [point(right, top), point(right, bottom), point(left, bottom), point(left, top)];
+    let corner_points = [
+        point(right, top),
+        point(right, bottom),
+        point(left, bottom),
+        point(left, top),
+    ];
     corner_arcs(edges, radius, corners)
         .into_iter()
         .zip(corner_points)
@@ -1150,6 +1178,21 @@ fn to_pixel_points(points: &[Point<f32>]) -> Vec<Point<Pixels>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The 45° cut depths these geometry tests were written against. They are
+    /// fixtures for the cut shape, kept apart from the design tokens, which now
+    /// size rounded corners.
+    mod cut {
+        use gpui::{Pixels, px};
+
+        pub const KEYCAP: Pixels = px(4.0); // guardrail-allow: cut-geometry fixture
+        pub const CONTROL: Pixels = px(6.0); // guardrail-allow: cut-geometry fixture
+        pub const INPUT: Pixels = px(8.0); // guardrail-allow: cut-geometry fixture
+        pub const LARGE_CONTROL: Pixels = px(10.0); // guardrail-allow: cut-geometry fixture
+        pub const OVERLAY: Pixels = px(12.0); // guardrail-allow: cut-geometry fixture
+        pub const CARD: Pixels = px(14.0); // guardrail-allow: cut-geometry fixture
+        pub const MODAL: Pixels = px(18.0); // guardrail-allow: cut-geometry fixture
+    }
     use gpui::{Context, Entity, TestAppContext, size};
 
     fn rect(x: f32, y: f32, width: f32, height: f32) -> Bounds<Pixels> {
@@ -1193,7 +1236,7 @@ mod tests {
     fn outside_polygons_cover_only_the_cut_corners() {
         let triangles = chamfer_outside_polygons(
             rect(10.0, 20.0, 200.0, 100.0),
-            px(14.0),
+            cut::CARD,
             ChamferCorners::default(),
         );
 
@@ -1209,7 +1252,7 @@ mod tests {
 
         let shape = chamfer_points(
             rect(10.0, 20.0, 200.0, 100.0),
-            px(14.0),
+            cut::CARD,
             ChamferCorners::default(),
         );
         assert!(!contains(&shape, 12.0, 22.0));
@@ -1220,14 +1263,14 @@ mod tests {
     fn outside_polygons_follow_the_cut_corners_and_skip_empty_shapes() {
         let top_left = chamfer_outside_polygons(
             rect(0.0, 0.0, 100.0, 30.0),
-            px(8.0),
+            cut::INPUT,
             ChamferCorners::TopLeft,
         );
         assert_eq!(top_left.len(), 1);
 
         let bottom_right = chamfer_outside_polygons(
             rect(0.0, 0.0, 100.0, 30.0),
-            px(8.0),
+            cut::INPUT,
             ChamferCorners::BottomRight,
         );
         assert_eq!(
@@ -1238,7 +1281,7 @@ mod tests {
         assert!(
             chamfer_outside_polygons(
                 rect(0.0, 0.0, 0.0, 30.0),
-                px(14.0),
+                cut::CARD,
                 ChamferCorners::default()
             )
             .is_empty()
@@ -1257,7 +1300,7 @@ mod tests {
     fn standard_cut_trims_top_left_and_bottom_right() {
         let points = chamfer_points(
             rect(0.0, 0.0, 100.0, 30.0),
-            px(6.0),
+            cut::CONTROL,
             ChamferCorners::default(),
         );
 
@@ -1278,7 +1321,7 @@ mod tests {
     fn tab_cut_trims_only_top_left() {
         let points = chamfer_points(
             rect(0.0, 0.0, 100.0, 30.0),
-            px(8.0),
+            cut::INPUT,
             ChamferCorners::TopLeft,
         );
 
@@ -1298,7 +1341,7 @@ mod tests {
     fn menu_segment_cut_trims_only_bottom_right() {
         let points = chamfer_points(
             rect(0.0, 0.0, 26.0, 28.0),
-            px(6.0),
+            cut::CONTROL,
             ChamferCorners::BottomRight,
         );
 
@@ -1318,7 +1361,7 @@ mod tests {
     fn points_are_offset_by_bounds_origin() {
         let points = chamfer_points(
             rect(10.0, 20.0, 50.0, 30.0),
-            px(4.0),
+            cut::KEYCAP,
             ChamferCorners::default(),
         );
 
@@ -1379,13 +1422,11 @@ mod tests {
             rect(5.0, 5.0, 0.0, 20.0),
             rect(0.0, 0.0, 20.0, -1.0),
         ] {
-            assert!(
-                chamfer_points(bounds, px(6.0), ChamferCorners::default()).is_empty()
-            );
+            assert!(chamfer_points(bounds, cut::CONTROL, ChamferCorners::default()).is_empty());
             assert!(
                 chamfer_border_polygons(
                     bounds,
-                    px(6.0),
+                    cut::CONTROL,
                     ChamferCorners::default(),
                     Borders::THIN
                 )
@@ -1394,7 +1435,7 @@ mod tests {
             assert!(
                 chamfer_top_edge_polygon(
                     bounds,
-                    px(6.0),
+                    cut::CONTROL,
                     ChamferCorners::TopLeft,
                     Borders::MEDIUM
                 )
@@ -1403,7 +1444,7 @@ mod tests {
             assert!(
                 chamfer_bottom_edge_polygon(
                     bounds,
-                    px(6.0),
+                    cut::CONTROL,
                     ChamferCorners::default(),
                     Borders::MEDIUM
                 )
@@ -1417,7 +1458,7 @@ mod tests {
         let bounds = rect(0.0, 0.0, 100.0, 30.0);
         let pieces = chamfer_border_polygons(
             bounds,
-            px(6.0),
+            cut::CONTROL,
             ChamferCorners::default(),
             Borders::THIN,
         );
@@ -1449,12 +1490,8 @@ mod tests {
     #[test]
     fn tab_border_keeps_the_square_corners() {
         let bounds = rect(0.0, 0.0, 100.0, 30.0);
-        let pieces = chamfer_border_polygons(
-            bounds,
-            px(8.0),
-            ChamferCorners::TopLeft,
-            Borders::THIN,
-        );
+        let pieces =
+            chamfer_border_polygons(bounds, cut::INPUT, ChamferCorners::TopLeft, Borders::THIN);
         let covered = |x: f32, y: f32| pieces.iter().any(|piece| contains(piece, x, y));
 
         assert!(covered(99.5, 29.5), "bottom-right corner is square");
@@ -1465,12 +1502,8 @@ mod tests {
     #[test]
     fn top_edge_follows_the_cut() {
         let bounds = rect(10.0, 0.0, 100.0, 36.0);
-        let polygon = chamfer_top_edge_polygon(
-            bounds,
-            px(8.0),
-            ChamferCorners::TopLeft,
-            Borders::MEDIUM,
-        );
+        let polygon =
+            chamfer_top_edge_polygon(bounds, cut::INPUT, ChamferCorners::TopLeft, Borders::MEDIUM);
 
         assert_eq!(
             vertex_set(&polygon),
@@ -1483,7 +1516,7 @@ mod tests {
         let bounds = rect(0.0, 0.0, 100.0, 40.0);
         let polygon = chamfer_left_edge_polygon(
             bounds,
-            px(8.0),
+            cut::INPUT,
             ChamferCorners::TopLeftBottomRight,
             Borders::MEDIUM,
         );
@@ -1499,13 +1532,13 @@ mod tests {
         let bounds = rect(0.0, 0.0, 40.0, 20.0);
         let square_bottom = chamfer_bottom_edge_polygon(
             bounds,
-            px(4.0),
+            cut::KEYCAP,
             ChamferCorners::TopLeft,
             Borders::MEDIUM,
         );
         let cut_bottom = chamfer_bottom_edge_polygon(
             bounds,
-            px(4.0),
+            cut::KEYCAP,
             ChamferCorners::default(),
             Borders::MEDIUM,
         );
@@ -1548,12 +1581,7 @@ mod tests {
     fn focus_ring_traces_the_full_outline_inside_the_bounds() {
         let bounds = rect(0.0, 0.0, 100.0, 28.0);
         let ring = ChamferRing::focus(gpui::blue());
-        let outline = chamfer_ring_points(
-            bounds,
-            px(6.0),
-            ChamferCorners::default(),
-            &ring,
-        );
+        let outline = chamfer_ring_points(bounds, cut::CONTROL, ChamferCorners::default(), &ring);
         let cut = 6.0 - 0.75 * (2.0 - std::f32::consts::SQRT_2);
 
         assert_points_close(
@@ -1568,7 +1596,7 @@ mod tests {
             ],
         );
 
-        let shape = chamfer_points(bounds, px(6.0), ChamferCorners::default());
+        let shape = chamfer_points(bounds, cut::CONTROL, ChamferCorners::default());
         let gap = top_left_diagonal_gap(&outline, &shape);
         assert!(
             (gap - 0.75).abs() < 1e-3,
@@ -1599,13 +1627,8 @@ mod tests {
     fn outside_ring_moves_every_side_and_diagonal_out_by_the_offset() {
         let bounds = rect(10.0, 10.0, 80.0, 28.0);
         let ring = ChamferRing::focus(gpui::blue()).outside(Borders::MEDIUM);
-        let outline = chamfer_ring_points(
-            bounds,
-            px(6.0),
-            ChamferCorners::default(),
-            &ring,
-        );
-        let shape = chamfer_points(bounds, px(6.0), ChamferCorners::default());
+        let outline = chamfer_ring_points(bounds, cut::CONTROL, ChamferCorners::default(), &ring);
+        let shape = chamfer_points(bounds, cut::CONTROL, ChamferCorners::default());
         let centerline = 2.0 + 0.75;
 
         let points = raw(&outline);
@@ -1628,7 +1651,7 @@ mod tests {
         let ring = ChamferRing::focus(gpui::blue());
         let tab = chamfer_ring_points(
             rect(0.0, 0.0, 60.0, 30.0),
-            px(8.0),
+            cut::INPUT,
             ChamferCorners::TopLeft,
             &ring,
         );
@@ -1640,7 +1663,7 @@ mod tests {
 
         let tiny = chamfer_ring_points(
             rect(0.0, 0.0, 1.0, 1.0),
-            px(6.0),
+            cut::CONTROL,
             ChamferCorners::default(),
             &ring,
         );
@@ -1648,7 +1671,7 @@ mod tests {
         assert!(
             chamfer_ring_points(
                 rect(0.0, 0.0, 0.0, 10.0),
-                px(6.0),
+                cut::CONTROL,
                 ChamferCorners::default(),
                 &ring
             )
@@ -1856,7 +1879,7 @@ mod tests {
                 .w(px(120.0))
                 .h(px(28.0))
                 .child(
-                    Chamfer::new(px(6.0))
+                    Chamfer::new(cut::CONTROL)
                         .fill(gpui::black())
                         .fill_hover(gpui::white())
                         .fill_active(gpui::red())
@@ -1912,54 +1935,121 @@ mod tests {
     #[test]
     fn rounded_outline_stays_inside_the_bounds_and_reaches_every_side() {
         let bounds = rect(10.0, 20.0, 100.0, 30.0);
-        let shape = shape_polygon_with(bounds, px(6.0), ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+        let shape = shape_polygon_with(
+            bounds,
+            crate::tokens::ChamferCut::INPUT,
+            ChamferCorners::TopLeftBottomRight,
+            CornerStyle::Round,
+        );
 
-        assert!(shape.iter().all(|p| p.x >= 9.999 && p.x <= 110.001 && p.y >= 19.999 && p.y <= 50.001));
-        assert!(shape.iter().any(|p| (p.y - 20.0).abs() < 0.001), "touches the top");
-        assert!(shape.iter().any(|p| (p.y - 50.0).abs() < 0.001), "touches the bottom");
-        assert!(shape.iter().any(|p| (p.x - 10.0).abs() < 0.001), "touches the left");
-        assert!(shape.iter().any(|p| (p.x - 110.0).abs() < 0.001), "touches the right");
-        assert!(!shape.iter().any(|p| p.x == 10.0 && p.y == 20.0), "the top-left corner is rounded off");
+        assert!(
+            shape
+                .iter()
+                .all(|p| p.x >= 9.999 && p.x <= 110.001 && p.y >= 19.999 && p.y <= 50.001)
+        );
+        assert!(
+            shape.iter().any(|p| (p.y - 20.0).abs() < 0.001),
+            "touches the top"
+        );
+        assert!(
+            shape.iter().any(|p| (p.y - 50.0).abs() < 0.001),
+            "touches the bottom"
+        );
+        assert!(
+            shape.iter().any(|p| (p.x - 10.0).abs() < 0.001),
+            "touches the left"
+        );
+        assert!(
+            shape.iter().any(|p| (p.x - 110.0).abs() < 0.001),
+            "touches the right"
+        );
+        assert!(
+            !shape.iter().any(|p| p.x == 10.0 && p.y == 20.0),
+            "the top-left corner is rounded off"
+        );
     }
 
     #[test]
     fn rounded_corner_points_lie_on_the_circle() {
         let bounds = rect(0.0, 0.0, 40.0, 40.0);
-        let shape = shape_polygon_with(bounds, px(8.0), ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+        let shape = shape_polygon_with(
+            bounds,
+            crate::tokens::ChamferCut::OVERLAY,
+            ChamferCorners::TopLeftBottomRight,
+            CornerStyle::Round,
+        );
 
-        for p in shape.iter().filter(|p| p.x < 8.0 && p.y < 8.0) {
-            let distance = ((p.x - 8.0).powi(2) + (p.y - 8.0).powi(2)).sqrt();
-            assert!((distance - 8.0).abs() < 0.01, "point {p:?} is {distance} from the centre");
+        let radius = f32::from(crate::tokens::ChamferCut::OVERLAY);
+        for p in shape.iter().filter(|p| p.x < radius && p.y < radius) {
+            let distance = ((p.x - radius).powi(2) + (p.y - radius).powi(2)).sqrt();
+            assert!(
+                (distance - radius).abs() < 0.01,
+                "point {p:?} is {distance} from the centre"
+            );
         }
     }
 
     #[test]
     fn one_sided_shapes_round_only_their_side() {
         let bounds = rect(0.0, 0.0, 60.0, 20.0);
-        let tab = shape_polygon_with(bounds, px(6.0), ChamferCorners::TopLeft, CornerStyle::Round);
-        let segment = shape_polygon_with(bounds, px(6.0), ChamferCorners::BottomRight, CornerStyle::Round);
+        let tab = shape_polygon_with(
+            bounds,
+            crate::tokens::ChamferCut::INPUT,
+            ChamferCorners::TopLeft,
+            CornerStyle::Round,
+        );
+        let segment = shape_polygon_with(
+            bounds,
+            crate::tokens::ChamferCut::INPUT,
+            ChamferCorners::BottomRight,
+            CornerStyle::Round,
+        );
 
-        assert!(tab.contains(&point(60.0, 0.0)) && tab.contains(&point(60.0, 20.0)), "right side stays square");
-        assert!(!tab.contains(&point(0.0, 0.0)) && !tab.contains(&point(0.0, 20.0)), "left side is rounded");
-        assert!(segment.contains(&point(0.0, 0.0)) && segment.contains(&point(0.0, 20.0)), "left side stays square");
-        assert!(!segment.contains(&point(60.0, 0.0)), "right side is rounded");
+        assert!(
+            tab.contains(&point(60.0, 0.0)) && tab.contains(&point(60.0, 20.0)),
+            "right side stays square"
+        );
+        assert!(
+            !tab.contains(&point(0.0, 0.0)) && !tab.contains(&point(0.0, 20.0)),
+            "left side is rounded"
+        );
+        assert!(
+            segment.contains(&point(0.0, 0.0)) && segment.contains(&point(0.0, 20.0)),
+            "left side stays square"
+        );
+        assert!(
+            !segment.contains(&point(60.0, 0.0)),
+            "right side is rounded"
+        );
     }
 
     #[test]
     fn rounded_outside_polygons_cover_each_rounded_corner() {
-        let all = rounded_outside_polygons((0.0, 0.0, 50.0, 30.0), 5.0, ChamferCorners::TopLeftBottomRight);
+        let all = rounded_outside_polygons(
+            (0.0, 0.0, 50.0, 30.0),
+            5.0,
+            ChamferCorners::TopLeftBottomRight,
+        );
         let tab = rounded_outside_polygons((0.0, 0.0, 50.0, 30.0), 5.0, ChamferCorners::TopLeft);
 
         assert_eq!(all.len(), 4);
         assert_eq!(tab.len(), 2);
-        assert!(all.iter().any(|polygon| polygon.first() == Some(&point(0.0, 0.0))));
+        assert!(
+            all.iter()
+                .any(|polygon| polygon.first() == Some(&point(0.0, 0.0)))
+        );
         assert!(all.iter().all(|polygon| polygon.len() >= 4));
     }
 
     #[test]
     fn zero_radius_rounded_shape_is_the_plain_rectangle() {
         let bounds = rect(0.0, 0.0, 30.0, 10.0);
-        let shape = shape_polygon_with(bounds, Pixels::ZERO, ChamferCorners::TopLeftBottomRight, CornerStyle::Round);
+        let shape = shape_polygon_with(
+            bounds,
+            Pixels::ZERO,
+            ChamferCorners::TopLeftBottomRight,
+            CornerStyle::Round,
+        );
 
         assert_eq!(shape.len(), 4);
     }

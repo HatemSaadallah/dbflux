@@ -95,8 +95,8 @@ fn theme_init_and_apply_theme_keep_centralized_fonts_without_changing_base_token
         let theme = Theme::global_mut(cx);
 
         assert_centralized_fonts(theme);
-        assert_eq!(theme.border, rgb_to_hsla(0x232128));
-        assert_eq!(theme.popover, rgb_to_hsla(0x100F13));
+        assert_eq!(theme.border, rgb_to_hsla(0x393B40));
+        assert_eq!(theme.popover, rgb_to_hsla(0x1E1F22));
     });
 
     cx.update(|cx| {
@@ -112,10 +112,10 @@ fn theme_init_and_apply_theme_keep_centralized_fonts_without_changing_base_token
         let theme = Theme::global_mut(cx);
 
         assert_centralized_fonts(theme);
-        assert_eq!(theme.background, rgb_to_hsla(0xF6F4F7));
-        assert_eq!(theme.foreground, rgb_to_hsla(0x3B3740));
-        assert_eq!(theme.border, rgb_to_hsla(0xE3DEE6));
-        assert_eq!(theme.primary, rgb_to_hsla(0x702963));
+        assert_eq!(theme.background, rgb_to_hsla(0xFFFFFF));
+        assert_eq!(theme.foreground, rgb_to_hsla(0x2B2D30));
+        assert_eq!(theme.border, rgb_to_hsla(0xDFE1E5));
+        assert_eq!(theme.primary, rgb_to_hsla(0x3574F0));
         assert_eq!(theme.primary_foreground, rgb_to_hsla(0xFFFFFF));
         assert_eq!(theme.danger_foreground, rgb_to_hsla(0xFFFFFF));
         assert_eq!(theme.success_foreground, rgb_to_hsla(0xFFFFFF));
@@ -123,13 +123,13 @@ fn theme_init_and_apply_theme_keep_centralized_fonts_without_changing_base_token
         assert_eq!(theme.info_foreground, rgb_to_hsla(0xFFFFFF));
         assert_eq!(theme.sidebar_primary_foreground, rgb_to_hsla(0xFFFFFF));
         assert_eq!(theme.popover, rgb_to_hsla(0xFFFFFF));
-        assert_eq!(theme.secondary, rgb_to_hsla(0xEEEAF0));
-        assert_eq!(theme.secondary_hover, rgb_to_hsla(0xE3DEE6));
-        assert_eq!(theme.secondary_active, rgb_to_hsla(0xCBC4D1));
-        assert_eq!(theme.primary_hover, rgb_to_hsla(0x7F3171));
-        assert_eq!(theme.primary_active, rgb_to_hsla(0x4A1B41));
-        assert_eq!(theme.input, rgb_to_hsla(0xCBC4D1));
-        assert_eq!(theme.ring, rgb_to_hsla(0x702963));
+        assert_eq!(theme.secondary, rgb_to_hsla(0xF2F3F5));
+        assert_eq!(theme.secondary_hover, rgb_to_hsla(0xDFE1E5));
+        assert_eq!(theme.secondary_active, rgb_to_hsla(0xC9CCD6));
+        assert_eq!(theme.primary_hover, rgb_to_hsla(0x467FF2));
+        assert_eq!(theme.primary_active, rgb_to_hsla(0x2E5FC4));
+        assert_eq!(theme.input, rgb_to_hsla(0xC9CCD6));
+        assert_eq!(theme.ring, rgb_to_hsla(0x3574F0));
     });
 }
 
@@ -149,43 +149,43 @@ fn dark_theme_maps_palette_roles_and_editor_chrome(cx: &mut TestAppContext) {
         let theme = Theme::global_mut(cx);
 
         assert_centralized_fonts(theme);
-        assert_eq!(theme.background, rgb_to_hsla(0x09090B));
-        assert_eq!(theme.foreground, rgb_to_hsla(0xC6C3CC));
-        assert_eq!(theme.muted_foreground, rgb_to_hsla(0x8E8996));
-        assert_eq!(theme.primary, rgb_to_hsla(0x702963));
-        assert_eq!(theme.primary_hover, rgb_to_hsla(0x7F3171));
-        assert_eq!(theme.primary_active, rgb_to_hsla(0x4A1B41));
+        assert_eq!(theme.background, rgb_to_hsla(0x1E1F22));
+        assert_eq!(theme.foreground, rgb_to_hsla(0xBCBEC4));
+        assert_eq!(theme.muted_foreground, rgb_to_hsla(0x95989F));
+        assert_eq!(theme.primary, rgb_to_hsla(0x3574F0));
+        assert_eq!(theme.primary_hover, rgb_to_hsla(0x467FF2));
+        assert_eq!(theme.primary_active, rgb_to_hsla(0x2E5FC4));
         assert_eq!(theme.primary_foreground, rgb_to_hsla(0xFFFFFF));
-        assert_eq!(theme.ring, rgb_to_hsla(0xD48CC8));
-        assert_eq!(theme.caret, rgb_to_hsla(0xD48CC8));
-        assert_eq!(theme.selection, rgb_to_hsla_alpha(0xD48CC8, 0.25));
-        assert_eq!(theme.popover, rgb_to_hsla(0x100F13));
-        assert_eq!(theme.secondary, rgb_to_hsla(0x1A181E));
-        assert_eq!(theme.secondary_hover, rgb_to_hsla(0x232128));
-        assert_eq!(theme.secondary_active, rgb_to_hsla(0x37333D));
-        assert_eq!(theme.input, rgb_to_hsla(0x37333D));
-        assert_eq!(theme.danger, rgb_to_hsla(0xFF6B5E));
-        assert_eq!(theme.danger_foreground, rgb_to_hsla(0x09090B));
-        assert_eq!(theme.table_row_border, rgb_to_hsla(0x18161B));
-        assert_eq!(theme.list_active, rgb_to_hsla_alpha(0xD48CC8, 0.12));
-        assert_eq!(theme.table_active, rgb_to_hsla_alpha(0xD48CC8, 0.07));
-        assert_eq!(theme.title_bar_border, rgb_to_hsla(0x232128));
-        assert_eq!(theme.window_border, rgb_to_hsla(0x232128));
+        assert_eq!(theme.ring, rgb_to_hsla(0x548AF7));
+        assert_eq!(theme.caret, rgb_to_hsla(0x548AF7));
+        assert_eq!(theme.selection, rgb_to_hsla_alpha(0x548AF7, 0.25));
+        assert_eq!(theme.popover, rgb_to_hsla(0x1E1F22));
+        assert_eq!(theme.secondary, rgb_to_hsla(0x2B2D30));
+        assert_eq!(theme.secondary_hover, rgb_to_hsla(0x393B40));
+        assert_eq!(theme.secondary_active, rgb_to_hsla(0x4E5157));
+        assert_eq!(theme.input, rgb_to_hsla(0x4E5157));
+        assert_eq!(theme.danger, rgb_to_hsla(0xF75464));
+        assert_eq!(theme.danger_foreground, rgb_to_hsla(0x1E1F22));
+        assert_eq!(theme.table_row_border, rgb_to_hsla(0x26282B));
+        assert_eq!(theme.list_active, rgb_to_hsla_alpha(0x548AF7, 0.12));
+        assert_eq!(theme.table_active, rgb_to_hsla_alpha(0x548AF7, 0.07));
+        assert_eq!(theme.title_bar_border, rgb_to_hsla(0x393B40));
+        assert_eq!(theme.window_border, rgb_to_hsla(0x393B40));
         assert_eq!(
             theme.highlight_theme.style.editor_background,
-            Some(rgb_to_hsla(0x09090B))
+            Some(rgb_to_hsla(0x1E1F22))
         );
         assert_eq!(
             theme.highlight_theme.style.editor_active_line,
-            Some(rgb_to_hsla_alpha(0xFFFFFF, 0.04))
+            Some(rgb_to_hsla_alpha(0xFFFFFF, 0.05))
         );
         assert_eq!(
             theme.highlight_theme.style.editor_line_number,
-            Some(rgb_to_hsla(0x8E8996))
+            Some(rgb_to_hsla(0x95989F))
         );
         assert_eq!(
             theme.highlight_theme.style.editor_active_line_number,
-            Some(rgb_to_hsla(0xF7F4F7))
+            Some(rgb_to_hsla(0xDFE1E5))
         );
     });
 }
@@ -195,8 +195,8 @@ fn ghost_border_resolves_to_the_palette_line_in_both_variants(cx: &mut TestAppCo
     cx.update(theme::init);
 
     for (setting, line) in [
-        (ThemeSetting::Dark, 0x232128),
-        (ThemeSetting::Light, 0xE3DEE6),
+        (ThemeSetting::Dark, 0x393B40),
+        (ThemeSetting::Light, 0xDFE1E5),
     ] {
         cx.update(|cx| {
             theme::apply_theme(setting, AppStyle::Default, Option::<&mut Window>::None, cx)
